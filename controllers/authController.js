@@ -32,6 +32,7 @@ const signUp = async (req, res) => {
     );
     data.password = hashedPassword;
     // console.log(hashedPassword);
+    data.email = data.email.replace('.','')
     
     const result = await signUpUser(data);
     return res.status(201).send(result);
