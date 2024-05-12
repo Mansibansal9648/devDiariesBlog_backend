@@ -32,7 +32,27 @@ const signUp = async (req, res) => {
     );
     data.password = hashedPassword;
     // console.log(hashedPassword);
-    data.email = data.email.replace('.','')
+  //   function correctEmailAddress(email) {
+  //     if (email.includes('.') && email.includes('@')) {
+  //         return email;
+  //     } else {
+  //         var correctedEmail = email.replace('.', '');
+  //         return correctedEmail;
+  //     }
+  // }
+
+  function correctEmailAddress(email) {
+    var atIndex = email.indexOf('@');
+    var dotIndex = email.lastIndexOf('.', atIndex);
+    
+    if (dotIndex !== -1) {
+        var correctedEmail = email.substring(0, dotIndex) + email.substring(dotIndex + 1);
+        return correctedEmail;
+    } else {
+        return email;
+    }
+}
+    data.email = correctEmailAddress(data.email);
     
     const result = await signUpUser(data);
     return res.status(201).send(result);
