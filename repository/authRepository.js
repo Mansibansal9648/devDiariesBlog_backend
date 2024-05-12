@@ -10,8 +10,15 @@ const signUpUser = async (data) => {
       });
       // const existedEmail = await User.findOne({username: data.username});
       // console.log(existedUser);
-      if (existedUser) {
-        throw new Error("User Already Exists");
+      if (
+        existedUser.username === data.username &&
+        existedUser.email === data.email
+      ) {
+        throw new Error("Username and Email Already Exists");
+      } else if (existedUser.username === data.username) {
+        throw new Error("Username Already Exists");
+      } else if (existedUser.email === data.email) {
+        throw new Error("Email Already Exists");
       } else {
         const user = new User(data);
         //  const newUser=await User.insert(req)
