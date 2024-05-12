@@ -5,6 +5,11 @@ const signUp = async (req, res) => {
     // console.log(req.body);
     let data = req.body;
 
+    if(!data.username){
+      // return res.status(400).send({message:"Name is required field"})
+      throw new Error("Username is required field");
+    }
+
     if(!data.name){
       // return res.status(400).send({message:"Name is required field"})
       throw new Error("Name is required field");
@@ -27,17 +32,7 @@ const signUp = async (req, res) => {
     );
     data.password = hashedPassword;
     // console.log(hashedPassword);
-    let email = data.email;
-    let username = "";
-    for (let i = 0; i < email.length; i++) {
-      if (email.charAt(i) == "@") {
-        break;
-      }
-      username += email.charAt(i);
-    }
-    // console.log(username);
-    data.username = username;
-    // console.log(data)
+    
     const result = await signUpUser(data);
     return res.status(201).send(result);
   } catch (error) {

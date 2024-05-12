@@ -5,7 +5,7 @@ const loginUser = (data) => {};
 const signUpUser = async (data) => {
   return new Promise(async(resolve,reject)=>{
     try {
-      const existedUser = await User.findOne({username: data.username});
+      const existedUser = await User.findOne({$or: [{username: data.username}, {email: data.email.replace('.','')}]});
       // console.log(existedUser);
       if (existedUser) {
         throw new Error("User Already Exists");
