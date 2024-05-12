@@ -32,14 +32,6 @@ const signUp = async (req, res) => {
     );
     data.password = hashedPassword;
     // console.log(hashedPassword);
-  //   function correctEmailAddress(email) {
-  //     if (email.includes('.') && email.includes('@')) {
-  //         return email;
-  //     } else {
-  //         var correctedEmail = email.replace('.', '');
-  //         return correctedEmail;
-  //     }
-  // }
 
   function correctEmailAddress(email) {
     var atIndex = email.indexOf('@');
