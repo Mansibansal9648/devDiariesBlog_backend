@@ -7,7 +7,7 @@ import {
 
 const signUp = async (req, res) => {
   try {
-    // console.log(req.body);
+    //  console.log(req.body);
     let data = req.body;
 
     if (!data.username) {
@@ -50,13 +50,13 @@ const signUp = async (req, res) => {
     // }
     // console.log(username);
     // data.username = username;
-    // console.log(data)
+    //  console.log("data",data)
     const result = await signUpUser(data);
-    return res.send(
-      apiResponseSuccess(result, true, 201, "User created successfully")
+    return res.status(201).send(
+      apiResponseSuccess({}, true, 201, "User created successfully")
     );
   } catch (error) {
-    return res.send(apiResponseErr(null, false, 400, error.message));
+    return res.status(400).send(apiResponseErr(null, false, 400, error.message));
   }
 };
 

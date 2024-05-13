@@ -2,12 +2,15 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
 const schema = new Schema({
-  username: { type: String, required: true, match: /^[a-zA-Z0-9_-]{3,25}$/ },
+  username: { type: String, required: true, unique:true,
+    match: /^[a-zA-Z0-9_-]{3,25}$/
+   },
   name: { type: String, required: true, match: /^[a-zA-Z\s]{3,25}$/ },
   email: {
     type: String,
     required: true,
     match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    index:true
   },
   password: {
     type: String,
