@@ -36,6 +36,7 @@ const signUp = async (req, res) => {
     data.password = hashedPassword;
     // console.log(hashedPassword);
     data.email = data.email.toLowerCase();
+    data.username = data.username.toLowerCase();
     // email.toLowerCase();
     // console.log(email);
     let email= data.email.split('@')[0].replaceAll(".", "");
