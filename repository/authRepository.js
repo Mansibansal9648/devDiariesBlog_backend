@@ -1,6 +1,20 @@
 import { User } from "../schemas/signupSchema.js";
 
-const loginUser = (data) => {};
+const loginUser = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findOne({ $or: [{ username: data.username }, { email: data.username }] });
+      if (!existedUser) {
+        throw new Error("Username not exist")
+      }
+      
+      resolve(existedUser)
+    } catch (err) {
+      reject(err);
+    }
+
+  });
+};
 
 const signUpUser = async (data) => {
   return new Promise(async (resolve, reject) => {

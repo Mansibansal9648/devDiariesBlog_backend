@@ -4,6 +4,7 @@ import {
   apiResponseSuccess,
   apiResponseErr,
 } from "../middlewares/apiResponse.js";
+import jwt from "jsonwebtoken";
 
 const signUp = async (req, res) => {
   try {
@@ -62,7 +63,34 @@ const signUp = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    loginUser();
-  } catch (error) {}
+    let data = req.body;
+    if (!data.username) {
+      throw new Error("Please enter your username or email");
+    }
+    if (!data.password) {
+      throw new Error("Please enter your password");
+    }
+    data.username = data.username.toLowerCase();
+    const existedUser = await loginUser(data);
+    const isPasswordValid = await bcrypt.compare(data.password, existedUser.password);
+    if (!isPasswordValid) {
+      throw new Error("Wrong password")
+    }
+    const accessTokenRes = {
+      id: existedUser._id,
+      username: existedUser.username,
+      email: existedUser.email
+    }
+    const accessToken = jwt.sign(accessTokenRes, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
+    res.send(
+      {
+      username: existedUser.username,
+      email: existedUser.email,
+      accessToken: accessToken,
+      data: {}
+    });
+  } catch (error) {
+    res.send(error.message);
+  }
 };
 export { signUp, login };
