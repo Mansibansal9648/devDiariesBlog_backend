@@ -70,7 +70,13 @@ if(!data.username_email){
 if(!data.password){
   throw new Error("Password is required field")
 }
-data.username_email=data.username_email.toLowerCase();
+
+let isEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.username_email)
+if(isEmail){
+  data.username_email=data.username_email.toLowerCase();
+  let email= data.username_email.split('@')[0].replaceAll(".", "");
+  data.username_email=email+'@'+data.username_email.split('@')[1];
+}
 let response=await loginUser(data);
 // console.log("res",response)
 if (response) {
