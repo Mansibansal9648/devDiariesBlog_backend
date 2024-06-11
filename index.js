@@ -1,5 +1,6 @@
 import express from "express";
 import authRouter from "./routes/authRoute.js";
+import labelRouter from "./routes/labelRoute.js"
 import dbConnection from "./db/db.js";
 import dotenv from "dotenv";
 import cors from 'cors';
@@ -15,6 +16,7 @@ app.use(cors({
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use("/api", authRouter);
+app.use("/label",labelRouter)
 
 // app.post('/',()=>{
 //     console.log("hello world")
