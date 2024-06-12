@@ -1,4 +1,4 @@
-import { createNewLabel } from "../repository/labelRepository.js";
+import { createNewLabel, getLabel } from "../repository/labelRepository.js";
 import {
   apiResponseSuccess,
   apiResponseErr,
@@ -25,6 +25,17 @@ const createLabel = async(req, res) => {
   }
 };
 
-const getAllLabel = (req, res) => {};
+const getAllLabel = async (req, res) => {
+    try {
+      const result = await getLabel();
+      return res
+      .status(200)
+      .send(apiResponseSuccess(result, true, 200, "Your label"));
+    } catch (error) {
+      return res
+      .status(400)
+      .send(apiResponseErr(null, false, 400, error.message));
+    }
+};
 
 export { createLabel, getAllLabel };

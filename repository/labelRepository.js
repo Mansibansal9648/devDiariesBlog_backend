@@ -22,4 +22,16 @@ const createNewLabel = (data) => {
   });
 };
 
-export { createNewLabel };
+const getLabel = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allLabels = await Label.find();
+      // console.log(allLabels);
+      resolve(allLabels);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export { createNewLabel, getLabel };
