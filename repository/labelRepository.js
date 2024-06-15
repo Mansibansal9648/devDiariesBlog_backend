@@ -34,4 +34,24 @@ const getLabel = () => {
   });
 };
 
-export { createNewLabel, getLabel };
+const getLabelsByName=(data)=>{
+  return new Promise(async(resolve,reject)=>{
+    try{
+      const regex = new RegExp(`^${data.name}`, 'i');
+
+      const existedLabels = await Label.find({
+        name: { $regex: regex },
+        });
+        //  console.log("existed labels",existedLabels)
+      if (existedLabels.length ===0) {
+        throw new Error("Label doesn't exists");
+      } else {
+        resolve(existedLabels);
+       }
+      }catch(error){
+      reject(error);
+    }
+  })
+}
+
+export { createNewLabel, getLabel,getLabelsByName };

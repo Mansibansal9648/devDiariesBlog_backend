@@ -1,10 +1,14 @@
-import { createNewLabel, getLabel } from "../repository/labelRepository.js";
+import {
+  createNewLabel,
+  getLabel,
+  getLabelsByName,
+} from "../repository/labelRepository.js";
 import {
   apiResponseSuccess,
   apiResponseErr,
 } from "../middlewares/apiResponse.js";
 
-const createLabel = async(req, res) => {
+const createLabel = async (req, res) => {
   try {
     let data = req.body;
     if (!data.name) {
@@ -26,16 +30,42 @@ const createLabel = async(req, res) => {
 };
 
 const getAllLabel = async (req, res) => {
-    try {
-      const result = await getLabel();
-      return res
+  try {
+    const result = await getLabel();
+    return res
       .status(200)
-      .send(apiResponseSuccess(result, true, 200, "Your label"));
-    } catch (error) {
-      return res
+      .send(
+        apiResponseSuccess(result, true, 200, "Getting all labels successfully")
+      );
+  } catch (error) {
+    return res
       .status(400)
       .send(apiResponseErr(null, false, 400, error.message));
-    }
+  }
 };
 
-export { createLabel, getAllLabel };
+const getLabelByName = async (req, res) => {
+  try {
+    let data = req.body;
+    if (!data.name) {
+      throw new Error("Label name is required field");
+    }
+    let result = await getLabelsByName(data);
+    return res
+      .status(201)
+      .send(
+        apiResponseSuccess(
+          result,
+          true,
+          200,
+          "Getting labels by name successfully"
+        )
+      );
+  } catch (error) {
+    return res
+      .status(400)
+      .send(apiResponseErr(null, false, 400, error.message));
+  }
+};
+
+export { createLabel, getAllLabel, getLabelByName };
