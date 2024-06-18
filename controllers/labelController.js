@@ -50,6 +50,8 @@ const getAllLabel = async (req, res) => {
 const getLabelByName = async (req, res) => {
   try {
     let data = req.body;
+    let name = data.name.replaceAll(" ", "");
+    data.name=name;
     if (!data.name) {
       throw new Error("Label name is required field");
     }
