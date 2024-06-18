@@ -11,6 +11,9 @@ import {
 const createLabel = async (req, res) => {
   try {
     let data = req.body;
+    let name = data.name.toLowerCase().replaceAll(" ", "");
+    data.name=name;
+    //  console.log(data.name)
     if (!data.name) {
       throw new Error("Label Name is required field");
     }
@@ -52,7 +55,7 @@ const getLabelByName = async (req, res) => {
     }
     let result = await getLabelsByName(data);
     return res
-      .status(201)
+      .status(200)
       .send(
         apiResponseSuccess(
           result,
