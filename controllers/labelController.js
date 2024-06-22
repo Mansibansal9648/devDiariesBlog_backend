@@ -11,6 +11,9 @@ import {
 const createLabel = async (req, res) => {
   try {
     let data = req.body;
+  if(data.name.charAt(0)==='_'){
+    throw new Error("Label can't start from underscore")
+  }
     let name = data.name.toLowerCase().replaceAll(" ", "");
     data.name=name;
     //  console.log(data.name)
