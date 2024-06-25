@@ -13,7 +13,7 @@ const signupUserSchema = [
     .notEmpty()
     .withMessage("Username is required field")
     .bail()
-    .matches(/^[a-z0-9_-]{3,25}$/)
+    .matches(/^[a-zA-Z0-9_-]{3,25}$/)
     .withMessage("Invalid username format"),
   body("name")
     .notEmpty()
