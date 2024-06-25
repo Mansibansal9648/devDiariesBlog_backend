@@ -7,6 +7,5 @@ import { validationHandler } from '../middlewares/validationHandler.js';
 
 router.route('/login').post(loginUserSchema,validationHandler,login)
 router.route('/signup').post(signupUserSchema,validationHandler,signUp)
-// router.post('/signup', signUp);
 
 export default router;
