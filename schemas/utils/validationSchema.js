@@ -37,4 +37,18 @@ const signupUserSchema = [
     .withMessage("Invalid password format"),
 ];
 
-export { loginUserSchema, signupUserSchema };
+const labelSchema=[
+  body("name")
+  .notEmpty()
+  .withMessage("Label name is required field")
+  .bail()
+  .matches(/^[a-zA-Z_]{1,35}$/)
+  .withMessage("Invalid label format"),
+]
+
+const getLabelSchema=[
+  body("name")
+  .notEmpty()
+  .withMessage("Label name is required field")
+]
+export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema };
