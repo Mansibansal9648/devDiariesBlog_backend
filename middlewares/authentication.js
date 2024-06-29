@@ -7,10 +7,10 @@ import {
 const authenticateToken = (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
-    console.log(authHeader);
+    // console.log(authHeader);
     const token = authHeader && authHeader.split(" ")[1];
 
-    console.log(token);
+    // console.log(token);
     if (!token) {
       return res
         .status(401)
@@ -25,7 +25,7 @@ const authenticateToken = (req, res, next) => {
     }
 
     const result = verifyAccessToken(token);
-    console.log(result);
+    // console.log(result);
     if (!result.success) {
       return res
         .status(403)
