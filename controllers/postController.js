@@ -7,6 +7,7 @@ const createPost=async(req,res)=>{
   try{
     let data=req.body;
      data.userId=req.user.id;
+    //  console.log(req.body);
      const result = await createNewPost(data);
     return res
     .status(200)

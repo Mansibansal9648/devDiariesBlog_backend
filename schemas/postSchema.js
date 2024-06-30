@@ -6,15 +6,11 @@ const schema = new Schema(
     userId: { type: String, required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
-    labelS: [],
+    labels: [String],
     comment_options: {
       type: String,
-      enum: [
-        "Allow",
-        "Don't allow, show existing",
-        "Don't allow, hide existing",
-      ],
-      default: "Allow",
+      enum: ["allow", "show_existing", "hide_existing"],
+      default: "allow",
     },
     //   createdAt:{type:String}
   },
