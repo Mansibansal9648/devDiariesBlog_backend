@@ -11,4 +11,19 @@ const createNewPost = (data) => {
   });
 };
 
-export { createNewPost };
+const getAllPost=(data)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(data)
+      // const post = new Post();
+      const allPosts = await Post.find({userId:data});
+      console.log(allPosts)
+      resolve(allPosts);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+}
+
+export { createNewPost, getAllPost };
