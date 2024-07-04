@@ -20,7 +20,7 @@ const createLabel = async (req, res) => {
 
     return res
       .status(201)
-      .send(apiResponseSuccess({}, true, 201, "Label created successfully"));
+      .send(apiResponseSuccess(result, true, 201, "Label created successfully"));
   } catch (error) {
     return res
       .status(400)
