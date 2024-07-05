@@ -15,7 +15,7 @@ app.use(cors({
   origin: "*",
 }))
 app.use(express.urlencoded({extended: true}));
-app.use(express.json());
+app.use(express.json({limit: '*'}));
 app.use("/api", authRouter);
 app.use("/label",labelRouter)
 app.use("/post",postRouter)
