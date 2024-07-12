@@ -63,7 +63,7 @@ const updatePost=(data)=>{
           comment_options:data.comment_options
 
          });
-        console.log(updatedPost)
+        // console.log(updatedPost)
         resolve(updatedPost);
       }
 
