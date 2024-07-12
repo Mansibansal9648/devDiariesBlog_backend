@@ -48,4 +48,29 @@ const removePost=(postId)=>{
   });
 }
 
-export { createNewPost, getAllPost,removePost };
+const updatePost=(data)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await Post.findById(data.postId);
+      if(!post){
+        throw new Error("Post doesn't exist")
+      }else{
+        // console.log(post)
+         const updatedPost= await Post.updateOne({_id:data.postId},{
+          title:data.title,
+          content:data.content,
+          labels:data.labels,
+          comment_options:data.comment_options
+
+         });
+        console.log(updatedPost)
+        resolve(updatedPost);
+      }
+
+    }catch(error){
+      reject(error);
+    }
+})
+}
+
+export { createNewPost, getAllPost,removePost,updatePost };
