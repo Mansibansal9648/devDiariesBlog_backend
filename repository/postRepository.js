@@ -14,10 +14,10 @@ const createNewPost = (data) => {
 const getAllPost=(data)=>{
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(data)
+      // console.log(data)
       // const post = new Post();
       const allPosts = await Post.find({userId:data});
-      console.log(allPosts)
+      // console.log(allPosts)
       resolve(allPosts);
     } catch (error) {
       reject(error);
@@ -26,4 +26,26 @@ const getAllPost=(data)=>{
 
 }
 
-export { createNewPost, getAllPost };
+const removePost=(postId)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await Post.findById(postId);
+
+      if(!post){
+        throw new Error("Post doesn't exist")
+      }else{
+        // console.log(post)
+        // const deletedPost= await Post.findByIdAndDelete(postId)
+         const deletedPost= await Post.deleteOne({_id:postId});
+        // console.log(deletedPost)
+        resolve(deletedPost);
+      }
+
+   
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export { createNewPost, getAllPost,removePost };

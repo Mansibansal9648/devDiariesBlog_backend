@@ -2,7 +2,7 @@ import {
     apiResponseSuccess,
     apiResponseErr,
   } from "../middlewares/apiResponse.js";
-  import { createNewPost, getAllPost } from "../repository/postRepository.js";
+  import { createNewPost, getAllPost,removePost } from "../repository/postRepository.js";
 const createPost=async(req,res)=>{
   try{
     let data=req.body;
@@ -38,5 +38,20 @@ return res
   }
 }
 
+const deletePost=async(req,res)=>{
+  try{
+    let {postId}=req.query;
+    let result= await removePost(postId);
+    return res
+    .status(200)
+    .send(
+      apiResponseSuccess({}, true, 200, "Post deleted successfully"))  
 
-export {createPost,getPost}
+  }catch(error){
+    return res
+    .status(400)
+    .send(apiResponseErr(null, false, 400, error.message));
+  }
+}
+
+export {createPost,getPost,deletePost}
