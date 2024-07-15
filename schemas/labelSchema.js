@@ -5,4 +5,4 @@ const schema = new Schema({
   name: { type: String, required: true, match: /^[a-z_]{1,35}$/ },
 });
 
-export const Label = mongoose.model("labels", schema);
+export const Label = mongoose.model("Label", schema);

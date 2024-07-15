@@ -6,7 +6,12 @@ const schema = new Schema(
     userId: { type: String, required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
-    labels: [String],
+    labels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Label",
+      }
+    ],
     comment_options: {
       type: String,
       enum: ["allow", "show_existing", "hide_existing"],
