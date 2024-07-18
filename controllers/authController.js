@@ -69,6 +69,7 @@ const login = async (req, res) => {
     );
     let result = {
       id: response._id,
+      name: response.name,
       username: response.username,
       email: response.email,
       isLogin: true,

@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 
 const schema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref:"User", required: true },
+    userId: { type: String, required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     labels: [
@@ -17,9 +17,10 @@ const schema = new Schema(
       enum: ["allow", "show_existing", "hide_existing"],
       default: "allow",
     },
-    //   createdAt:{type:String}
+    createdAt:{type:String,required:true},
+    updatedAt:{type:String,required:true}
   },
-  { timestamps: true }
+//  { timestamps: { type: Date, default: Date.now }}
 );
 
 export const Post = mongoose.model("posts", schema);
