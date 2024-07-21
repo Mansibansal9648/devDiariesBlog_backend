@@ -29,7 +29,7 @@ const getAllPost = (data) => {
     try {
       // console.log(data)
       // const post = new Post();
-      const allPosts = await Post.find({userId:data}).populate("labels")
+      const allPosts = await Post.find({userId:data})
       // console.log(allPosts)
       resolve(allPosts);
     } catch (error) {
