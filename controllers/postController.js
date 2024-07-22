@@ -28,7 +28,22 @@ const getPost = async (req, res) => {
   try {
     let userId = req.user.id;
     // console.log(req.body.userId)
-    const result = await getAllPost(userId);
+    let result = await getAllPost(userId);
+    let temp = {};
+    for (let i = 0; i < result.length; i++) {
+      for (let j = 0; j < result.length - i - 1; j++) {
+        // console.log(result[j])
+        if (
+          new Date(result[j].updatedAt).getTime() <
+          new Date(result[j + 1].updatedAt).getTime()
+        ) {
+          temp = result[j];
+          result[j] = result[j + 1];
+          result[j + 1] = temp;
+        }
+      }
+    }
+
     return res
       .status(200)
       .send(
