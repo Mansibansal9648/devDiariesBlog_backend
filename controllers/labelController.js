@@ -18,28 +18,18 @@ const createLabel = async (req, res) => {
     data.name=name;
     let result = await createNewLabel(data);
 
-    return res
-      .status(201)
-      .send(apiResponseSuccess(result, true, 201, "Label created successfully"));
+    return apiResponseSuccess(result, true, 201, "Label created successfully", res)
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res)
   }
 };
 
 const getAllLabel = async (req, res) => {
   try {
     const result = await getLabel();
-    return res
-      .status(200)
-      .send(
-        apiResponseSuccess(result, true, 200, "Getting all labels successfully")
-      );
+    return apiResponseSuccess(result, true, 200, "Getting all labels successfully", res)
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res)
   }
 };
 
@@ -50,20 +40,10 @@ const getLabelByName = async (req, res) => {
      data.name=name;
 
     let result = await getLabelsByName(data);
-    return res
-      .status(200)
-      .send(
-        apiResponseSuccess(
-          result,
-          true,
-          200,
-          "Getting labels by name successfully"
-        )
-      );
+    return apiResponseSuccess(result, true, 200, "Getting labels by name successfully", res)
+      
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res)
   }
 };
 

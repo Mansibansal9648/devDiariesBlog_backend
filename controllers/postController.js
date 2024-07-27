@@ -8,19 +8,16 @@ import {
   removePost,
   updatePost,
 } from "../repository/postRepository.js";
+
 const createPost = async (req, res) => {
   try {
     let data = req.body;
     data.userId = req.user.id;
     //  console.log(req.body);
     const result = await createNewPost(data);
-    return res
-      .status(201)
-      .send(apiResponseSuccess([], true, 201, "Post created successfully"));
+    return apiResponseSuccess([], true, 201, "Post created successfully",res);
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 
@@ -44,15 +41,9 @@ const getPost = async (req, res) => {
       }
     }
 
-    return res
-      .status(200)
-      .send(
-        apiResponseSuccess(result, true, 200, "Posts retrieved successfully")
-      );
+    return apiResponseSuccess(result, true, 200, "Posts retrieved successfully", res);
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 
@@ -60,13 +51,9 @@ const deletePost = async (req, res) => {
   try {
     let { postId } = req.query;
     let result = await removePost(postId);
-    return res
-      .status(200)
-      .send(apiResponseSuccess({}, true, 200, "Post deleted successfully"));
+    return apiResponseSuccess({}, true, 200, "Post deleted successfully", res);
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 
@@ -75,13 +62,9 @@ const editPost = async (req, res) => {
     let data = req.body;
     // console.log(data);
     let result = await updatePost(data);
-    return res
-      .status(200)
-      .send(apiResponseSuccess({}, true, 200, "Post updated successfully"));
+    return apiResponseSuccess({}, true, 200, "Post updated successfully", res);
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 

@@ -12,33 +12,18 @@ const authenticateToken = (req, res, next) => {
 
     // console.log(token);
     if (!token) {
-      return res
-        .status(401)
-        .send(
-          apiResponseErr(
-            null,
-            false,
-            401,
-            "You are not authorized - Unauthorized Access"
-          )
-        );
+      return apiResponseErr(null, false, 401, "You are not authorized - Unauthorized Access", res);
     }
 
     const result = verifyAccessToken(token);
     // console.log(result);
     if (!result.success) {
-      return res
-        .status(403)
-        .send(
-          apiResponseErr(null, false, 403, "You don't have permission for this")
-        );
+      return apiResponseErr(null, false, 403, "You don't have permission for this", res);
     }
 
     req.user = result.data;
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res);
   }
   next();
 };

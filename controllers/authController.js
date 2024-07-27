@@ -24,13 +24,9 @@ const signUp = async (req, res) => {
     let email = data.email.split("@")[0].replaceAll(".", "");
     data.email = email + "@" + data.email.split("@")[1];
     const result = await signUpUser(data);
-    return res
-      .status(201)
-      .send(apiResponseSuccess({}, true, 201, "User created successfully"));
+    return apiResponseSuccess({}, true, 201, "User created successfully", res)
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res)
   }
 };
 
@@ -75,15 +71,9 @@ const login = async (req, res) => {
       isLogin: true,
       accessToken: accessToken,
     };
-    return res
-      .status(200)
-      .send(
-        apiResponseSuccess(result, true, 200, "User loggedIn successfully")
-      );
+    return apiResponseSuccess(result, true, 200, "User loggedIn successfully", res)
   } catch (error) {
-    return res
-      .status(400)
-      .send(apiResponseErr(null, false, 400, error.message));
+    return apiResponseErr(null, false, 400, error.message, res)
   }
 };
 export { signUp, login };
