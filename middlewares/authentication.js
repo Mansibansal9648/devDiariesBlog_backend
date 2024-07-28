@@ -12,13 +12,13 @@ const authenticateToken = (req, res, next) => {
 
     // console.log(token);
     if (!token) {
-      return apiResponseErr(null, false, 401, "You are not authorized - Unauthorized Access", res);
+      return apiResponseErr(null, false, 401,"Token not found" , res);
     }
 
     const result = verifyAccessToken(token);
     // console.log(result);
     if (!result.success) {
-      return apiResponseErr(null, false, 403, "You don't have permission for this", res);
+      return apiResponseErr(null, false, 401, "You are not authorized - Unauthorized Access", res);
     }
 
     req.user = result.data;
