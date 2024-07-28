@@ -17,7 +17,6 @@ const createLabel = async (req, res) => {
     let name = data.name.toLowerCase().replaceAll(" ", "");
     data.name=name;
     let result = await createNewLabel(data);
-
     return apiResponseSuccess(result, true, 201, "Label created successfully", res)
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res)
