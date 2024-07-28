@@ -25,4 +25,4 @@ const schema = new Schema({
   // confirm_password: { type: String, required: true }
 });
 
-export const User = mongoose.model("users", schema);
+export const User = mongoose.model("User", schema);
