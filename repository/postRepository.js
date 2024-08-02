@@ -97,4 +97,31 @@ const updatePost = (data) => {
   });
 };
 
-export { createNewPost, getAllPost, removePost, updatePost };
+const getPostsByTitle=(data)=>{
+  return new Promise(async(resolve,reject)=>{
+    try{
+// Remove spaces from the search term
+const allowedSpacesTitle = data.title.replace(/\s+/g, '');
+// const escapedTerm = escapeRegExp(cleanSearchTerm);
+
+// Create a regex pattern that allows for any characters between each character of the search term
+const regexPattern = allowedSpacesTitle.split('').join('.*');
+const regex = new RegExp(regexPattern, 'i');
+
+
+      // const regex = new RegExp(`${data.title}`, 'i');
+
+      const existedPosts= await Post.find({
+        title: { $regex: regex },
+        });
+      if (existedPosts.length ===0) {
+        throw new Error("Posts doesn't exists");
+      } else {
+        resolve(existedPosts);
+       }
+      }catch(error){
+      reject(error);
+    }
+  })
+}
+export { createNewPost, getAllPost, removePost, updatePost,getPostsByTitle };
