@@ -72,6 +72,7 @@ const editPost = async (req, res) => {
 const getPostByTitle = async (req, res) => {
   try {
     let data = req.body;
+    data.userId = req.user.id
 
     let result = await getPostsByTitle(data);
     return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)

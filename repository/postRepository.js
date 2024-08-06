@@ -112,13 +112,14 @@ const regex = new RegExp(regexPattern, 'i');
       // const regex = new RegExp(`${data.title}`, 'i');
 
       const existedPosts= await Post.find({
+        userId:data.userId,
         title: { $regex: regex },
         });
-      if (existedPosts.length ===0) {
-        throw new Error("Posts doesn't exists");
-      } else {
+      // if (existedPosts.length ===0) {
+      //   throw new Error("Posts doesn't exists");
+      // } else {
         resolve(existedPosts);
-       }
+       
       }catch(error){
       reject(error);
     }
