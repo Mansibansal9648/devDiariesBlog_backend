@@ -9,6 +9,7 @@ import {
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
+  searchPostByLabel
 } from "../repository/postRepository.js";
 
 const createPost = async (req, res) => {
@@ -106,4 +107,16 @@ const getAllLabelsUsedByUser = async (req, res) => {
   }
 };
 
-export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser };
+const getPostByLabel=async(req,res)=>{
+  try {
+    let data = req.body;
+    data.userId = req.user.id;
+    // console.log(data);
+    let result = await searchPostByLabel(data);
+    return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res);
+  }
+}
+
+export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel };

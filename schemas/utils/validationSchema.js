@@ -67,4 +67,10 @@ const getPostByTitleSchema=[
   .notEmpty()
   .withMessage("Title is required field")
 ]
-export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema };
+
+const getPostByLabelSchema=[
+  body("label")
+  .notEmpty()
+  .withMessage("Label is required field")
+]
+export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema, getPostByLabelSchema};

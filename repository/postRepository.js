@@ -147,6 +147,23 @@ const getAllUsedLabelsByUser = async (userId) => {
     }
   });
 };
+
+const searchPostByLabel = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // console.log(data)
+      const postsByLabel = await Post.aggregate([
+        { $match: { userId: data.userId, labels: data.label } },
+      ]);
+      // console.log(postsByLabel)
+      resolve(postsByLabel);
+    } catch (error) {
+      // console.error("Error searching posts by label:", error);
+      reject(error);
+    }
+  });
+};
+
 export {
   createNewPost,
   getAllPost,
@@ -154,4 +171,5 @@ export {
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
+  searchPostByLabel
 };
