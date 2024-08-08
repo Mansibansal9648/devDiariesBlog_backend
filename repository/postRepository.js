@@ -2,19 +2,21 @@ import { Post } from "../schemas/postSchema.js";
 const createNewPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-       const now = new Date();
-      // const istOffset = 5.5 * 60 * 60 * 1000; 
+      const now = new Date();
+      // const istOffset = 5.5 * 60 * 60 * 1000;
       // data["createdAt"] = new Date(now.getTime() + istOffset);
       // data["updatedAt"] = new Date(now.getTime() + istOffset);
       // Get the current time in UTC and convert it to IST
-const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000; 
-const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000; 
+      const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
+      const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
 
-// Calculate the current time in IST
-const istTime = new Date(now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds);
+      // Calculate the current time in IST
+      const istTime = new Date(
+        now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
+      );
 
-data["createdAt"] = istTime;
-data["updatedAt"] = istTime;
+      data["createdAt"] = istTime;
+      data["updatedAt"] = istTime;
       const post = new Post(data);
       const newPost = await post.save();
       resolve(newPost);
@@ -29,7 +31,7 @@ const getAllPost = (data) => {
     try {
       // console.log(data)
       // const post = new Post();
-      const allPosts = await Post.find({userId:data})
+      const allPosts = await Post.find({ userId: data });
       // console.log(allPosts)
       resolve(allPosts);
     } catch (error) {
@@ -61,23 +63,24 @@ const removePost = (postId) => {
 const updatePost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
- 
       const post = await Post.findById(data.postId);
       if (!post) {
         throw new Error("Post doesn't exist");
       } else {
         //  console.log(post)
         const now = new Date();
-        // const istOffset = 5.5 * 60 * 60 * 1000; 
+        // const istOffset = 5.5 * 60 * 60 * 1000;
         // data["updatedAt"] = new Date(now.getTime() + istOffset);
-        const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000; 
-  const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000; 
-  
-  // Calculate the current time in IST
-  const istTime = new Date(now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds);
-  
-  // data["createdAt"] = istTime;
-  data["updatedAt"] = istTime;
+        const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
+        const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
+
+        // Calculate the current time in IST
+        const istTime = new Date(
+          now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
+        );
+
+        // data["createdAt"] = istTime;
+        data["updatedAt"] = istTime;
         const updatedPost = await Post.updateOne(
           { _id: data.postId },
           {
@@ -85,7 +88,7 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
-            updatedAt:data.updatedAt
+            updatedAt: data.updatedAt,
           }
         );
         //  console.log(updatedPost)
@@ -125,4 +128,30 @@ const regex = new RegExp(regexPattern, 'i');
     }
   })
 }
-export { createNewPost, getAllPost, removePost, updatePost,getPostsByTitle };
+const getAllUsedLabelsByUser = async (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // console.log(userId)
+      const userLabels = await Post.aggregate([
+        { $match: { userId: userId } },
+        { $unwind: "$labels" },
+        { $group: { _id: null, userLabels: { $addToSet: "$labels" } } },
+        { $project: { _id: 0, userLabels: 1 } },
+      ]);
+
+      // console.log(userLabels);
+      resolve(userLabels.length ? userLabels[0].userLabels : []);
+    } catch (error) {
+      // console.error('Error fetching unique labels:', error);
+      reject(error);
+    }
+  });
+};
+export {
+  createNewPost,
+  getAllPost,
+  removePost,
+  updatePost,
+  getPostsByTitle,
+  getAllUsedLabelsByUser,
+};
