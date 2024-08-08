@@ -7,6 +7,7 @@ import {
   getAllPost,
   removePost,
   updatePost,
+  getPostsByTitle,
   getAllUsedLabelsByUser,
 } from "../repository/postRepository.js";
 
@@ -75,6 +76,19 @@ const editPost = async (req, res) => {
   }
 };
 
+const getPostByTitle = async (req, res) => {
+  try {
+    let data = req.body;
+    data.userId = req.user.id
+
+    let result = await getPostsByTitle(data);
+    return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
+      
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res)
+  }
+};
+
 const getAllLabelsUsedByUser = async (req, res) => {
   try {
     let userId = req.user.id;
@@ -92,4 +106,4 @@ const getAllLabelsUsedByUser = async (req, res) => {
   }
 };
 
-export { createPost, getPost, deletePost, editPost, getAllLabelsUsedByUser };
+export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser };

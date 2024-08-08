@@ -61,4 +61,10 @@ const editPostSchema=[
 ...createPostSchema,
 body("postId").notEmpty().withMessage("Post Id is required field")
 ]
-export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema };
+
+const getPostByTitleSchema=[
+  body("title")
+  .notEmpty()
+  .withMessage("Title is required field")
+]
+export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema };
