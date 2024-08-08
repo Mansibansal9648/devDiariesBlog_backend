@@ -100,6 +100,54 @@ const updatePost = (data) => {
   });
 };
 
+const getPostsByTitle=(data)=>{
+  return new Promise(async(resolve,reject)=>{
+    try{
+// Remove spaces from the search term
+const allowedSpacesTitle = data.title.replace(/\s+/g, '');
+// const escapedTerm = escapeRegExp(cleanSearchTerm);
+
+// Create a regex pattern that allows for any characters between each character of the search term
+const regexPattern = allowedSpacesTitle.split('').join('.*');
+const regex = new RegExp(regexPattern, 'i');
+
+
+      // const regex = new RegExp(`${data.title}`, 'i');
+
+      const existedPosts= await Post.find({
+        userId:data.userId,
+        title: { $regex: regex },
+        });
+      // if (existedPosts.length ===0) {
+      //   throw new Error("Posts doesn't exists");
+      // } else {
+        resolve(existedPosts);
+       
+      }catch(error){
+      reject(error);
+    }
+  })
+}
+const getAllUsedLabelsByUser = async (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // console.log(userId)
+      const userLabels = await Post.aggregate([
+        { $match: { userId: userId } },
+        { $unwind: "$labels" },
+        { $group: { _id: null, userLabels: { $addToSet: "$labels" } } },
+        { $project: { _id: 0, userLabels: 1 } },
+      ]);
+
+      // console.log(userLabels);
+      resolve(userLabels.length ? userLabels[0].userLabels : []);
+    } catch (error) {
+      // console.error('Error fetching unique labels:', error);
+      reject(error);
+    }
+  });
+};
+
 const searchPostByLabel = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -110,10 +158,18 @@ const searchPostByLabel = (data) => {
       // console.log(postsByLabel)
       resolve(postsByLabel);
     } catch (error) {
-      console.error("Error searching posts by label:", error);
+      // console.error("Error searching posts by label:", error);
       reject(error);
     }
   });
 };
 
-export { createNewPost, getAllPost, removePost, updatePost, searchPostByLabel };
+export {
+  createNewPost,
+  getAllPost,
+  removePost,
+  updatePost,
+  getPostsByTitle,
+  getAllUsedLabelsByUser,
+  searchPostByLabel
+};

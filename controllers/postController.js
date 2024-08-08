@@ -7,6 +7,8 @@ import {
   getAllPost,
   removePost,
   updatePost,
+  getPostsByTitle,
+  getAllUsedLabelsByUser,
   searchPostByLabel
 } from "../repository/postRepository.js";
 
@@ -16,7 +18,7 @@ const createPost = async (req, res) => {
     data.userId = req.user.id;
     //  console.log(req.body);
     const result = await createNewPost(data);
-    return apiResponseSuccess([], true, 201, "Post created successfully",res);
+    return apiResponseSuccess([], true, 201, "Post created successfully", res);
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
   }
@@ -42,7 +44,13 @@ const getPost = async (req, res) => {
       }
     }
 
-    return apiResponseSuccess(result, true, 200, "Posts retrieved successfully", res);
+    return apiResponseSuccess(
+      result,
+      true,
+      200,
+      "Posts retrieved successfully",
+      res
+    );
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
   }
@@ -69,6 +77,36 @@ const editPost = async (req, res) => {
   }
 };
 
+const getPostByTitle = async (req, res) => {
+  try {
+    let data = req.body;
+    data.userId = req.user.id
+
+    let result = await getPostsByTitle(data);
+    return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
+      
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res)
+  }
+};
+
+const getAllLabelsUsedByUser = async (req, res) => {
+  try {
+    let userId = req.user.id;
+    // console.log(req.body.userId)
+    let result = await getAllUsedLabelsByUser(userId);
+    return apiResponseSuccess(
+      result,
+      true,
+      200,
+      "Labels Used by User retrieved successfully",
+      res
+    );
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res);
+  }
+};
+
 const getPostByLabel=async(req,res)=>{
   try {
     let data = req.body;
@@ -81,4 +119,4 @@ const getPostByLabel=async(req,res)=>{
   }
 }
 
-export { createPost, getPost, deletePost, editPost,getPostByLabel };
+export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel };
