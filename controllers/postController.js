@@ -7,6 +7,7 @@ import {
   getAllPost,
   removePost,
   updatePost,
+  getPostsByTitle
 } from "../repository/postRepository.js";
 
 const createPost = async (req, res) => {
@@ -68,4 +69,17 @@ const editPost = async (req, res) => {
   }
 };
 
-export { createPost, getPost, deletePost, editPost };
+const getPostByTitle = async (req, res) => {
+  try {
+    let data = req.body;
+    data.userId = req.user.id
+
+    let result = await getPostsByTitle(data);
+    return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
+      
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res)
+  }
+};
+
+export { createPost, getPost, deletePost, editPost,getPostByTitle };
