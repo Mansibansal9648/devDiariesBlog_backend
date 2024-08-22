@@ -113,6 +113,20 @@ const getPostByLabel=async(req,res)=>{
     data.userId = req.user.id;
     // console.log(data);
     let result = await searchPostByLabel(data);
+    let temp = {}
+    for(let i = 0; i < result.length; i++){
+      for(let j = 0; j < result.length - i - 1; j++) {
+        if(
+          new Date(result[j].updatedAt).getTime() < 
+          new Date(result[j + 1].updatedAt).getTime()
+        )
+        {
+          temp = result[j]
+          result[j] = result[j + 1];
+          result[j + 1] = temp;
+        }
+      }
+    }
     return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
