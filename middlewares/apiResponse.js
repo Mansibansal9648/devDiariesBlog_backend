@@ -15,3 +15,24 @@ export const apiResponseSuccess = (data, success, responseCode, resMessage, res)
     resMessage: resMessage,
   });
 };
+
+export const apiResponsePagination = (
+  data,
+  success,
+  responseCode,
+  resMessage,
+  { page, totalPages, totalItems },
+  res
+) => {
+  return res.status(responseCode).send({
+      data: data,
+      success: success,
+      responseCode: responseCode,
+      resMessage: resMessage,
+      pagination: {
+          page: page,
+          totalPages: totalPages,
+          totalItems: totalItems,
+      },
+  })
+}

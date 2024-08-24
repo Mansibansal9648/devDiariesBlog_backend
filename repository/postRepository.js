@@ -1,22 +1,9 @@
 import { Post } from "../schemas/postSchema.js";
+import moment from "moment";
+
 const createNewPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const now = new Date();
-      // const istOffset = 5.5 * 60 * 60 * 1000;
-      // data["createdAt"] = new Date(now.getTime() + istOffset);
-      // data["updatedAt"] = new Date(now.getTime() + istOffset);
-      // Get the current time in UTC and convert it to IST
-      const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
-      const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
-
-      // Calculate the current time in IST
-      const istTime = new Date(
-        now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
-      );
-
-      data["createdAt"] = istTime;
-      data["updatedAt"] = istTime;
       const post = new Post(data);
       const newPost = await post.save();
       resolve(newPost);
@@ -26,14 +13,36 @@ const createNewPost = (data) => {
   });
 };
 
-const getAllPost = (data) => {
+const getAllPost = (userId, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
       // console.log(data)
       // const post = new Post();
-      const allPosts = await Post.find({ userId: data });
-      // console.log(allPosts)
-      resolve(allPosts);
+      // const existedPosts = await  Post.find({ userId:userId  }).skip(offset).limit(limit)
+      // const totalPosts = await Post.countDocuments()
+      // const totalPages = page && limit ? Math.ceil(totalPosts / limit) : 1
+      // resolve( {
+      //     totalEmployees: totalPosts,
+      //     totalPages: totalPages,
+      //     currentPage: page || 1,
+      //     existedPosts,
+      // })
+
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
+      };
+
+      // Using Mongoose Paginate V2
+      const result = await Post.paginate({ userId: userId }, options);
+
+      resolve({
+        totalEmployees: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPosts: result.docs,
+      });
     } catch (error) {
       reject(error);
     }
@@ -68,19 +77,19 @@ const updatePost = (data) => {
         throw new Error("Post doesn't exist");
       } else {
         //  console.log(post)
-        const now = new Date();
+        // const now = new Date();
         // const istOffset = 5.5 * 60 * 60 * 1000;
         // data["updatedAt"] = new Date(now.getTime() + istOffset);
-        const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
-        const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
+        // const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
+        // const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
 
-        // Calculate the current time in IST
-        const istTime = new Date(
-          now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
-        );
+        // // Calculate the current time in IST
+        // const istTime = new Date(
+        //   now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
+        // );
 
         // data["createdAt"] = istTime;
-        data["updatedAt"] = istTime;
+        // data["updatedAt"] = istTime;
         const updatedPost = await Post.updateOne(
           { _id: data.postId },
           {
@@ -88,7 +97,7 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
-            updatedAt: data.updatedAt,
+            // updatedAt: data.updatedAt,
           }
         );
         //  console.log(updatedPost)
@@ -100,34 +109,32 @@ const updatePost = (data) => {
   });
 };
 
-const getPostsByTitle=(data)=>{
-  return new Promise(async(resolve,reject)=>{
-    try{
-// Remove spaces from the search term
-const allowedSpacesTitle = data.title.replace(/\s+/g, '');
-// const escapedTerm = escapeRegExp(cleanSearchTerm);
+const getPostsByTitle = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Remove spaces from the search term
+      const allowedSpacesTitle = data.title.replace(/\s+/g, "");
+      // const escapedTerm = escapeRegExp(cleanSearchTerm);
 
-// Create a regex pattern that allows for any characters between each character of the search term
-const regexPattern = allowedSpacesTitle.split('').join('.*');
-const regex = new RegExp(regexPattern, 'i');
-
+      // Create a regex pattern that allows for any characters between each character of the search term
+      const regexPattern = allowedSpacesTitle.split("").join(".*");
+      const regex = new RegExp(regexPattern, "i");
 
       // const regex = new RegExp(`${data.title}`, 'i');
 
-      const existedPosts= await Post.find({
-        userId:data.userId,
+      const existedPosts = await Post.find({
+        userId: data.userId,
         title: { $regex: regex },
-        });
+      });
       // if (existedPosts.length ===0) {
       //   throw new Error("Posts doesn't exists");
       // } else {
-        resolve(existedPosts);
-       
-      }catch(error){
+      resolve(existedPosts);
+    } catch (error) {
       reject(error);
     }
-  })
-}
+  });
+};
 const getAllUsedLabelsByUser = async (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -171,5 +178,5 @@ export {
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
-  searchPostByLabel
+  searchPostByLabel,
 };

@@ -1,6 +1,7 @@
 import {
   apiResponseSuccess,
   apiResponseErr,
+  apiResponsePagination,
 } from "../middlewares/apiResponse.js";
 import {
   createNewPost,
@@ -28,27 +29,36 @@ const getPost = async (req, res) => {
   try {
     let userId = req.user.id;
     // console.log(req.body.userId)
-    let result = await getAllPost(userId);
-    let temp = {};
-    for (let i = 0; i < result.length; i++) {
-      for (let j = 0; j < result.length - i - 1; j++) {
-        // console.log(result[j])
-        if (
-          new Date(result[j].updatedAt).getTime() <
-          new Date(result[j + 1].updatedAt).getTime()
-        ) {
-          temp = result[j];
-          result[j] = result[j + 1];
-          result[j + 1] = temp;
-        }
-      }
-    }
+    const { page, limit } = req.query
+    // const offset = page && limit ? (page - 1) * parseInt(limit, 10) : null
 
-    return apiResponseSuccess(
-      result,
+    let { totalPosts, totalPages, currentPage, existedPosts }  = await getAllPost(userId,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPosts,
+  }
+    // let temp = {};
+    // for (let i = 0; i < result.length; i++) {
+    //   for (let j = 0; j < result.length - i - 1; j++) {
+    //     // console.log(result[j])
+    //     if (
+    //       new Date(result[j].updatedAt).getTime() <
+    //       new Date(result[j + 1].updatedAt).getTime()
+    //     ) {
+    //       temp = result[j];
+    //       result[j] = result[j + 1];
+    //       result[j + 1] = temp;
+    //     }
+    //   }
+    // }
+
+    return apiResponsePagination(
+      existedPosts,
       true,
       200,
       "Posts retrieved successfully",
+      pagination,
       res
     );
   } catch (error) {
