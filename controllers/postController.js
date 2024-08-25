@@ -38,6 +38,7 @@ const getPost = async (req, res) => {
       totalPages: totalPages,
       totalItems: totalPosts,
   }
+  // console.log(pagination)
     // let temp = {};
     // for (let i = 0; i < result.length; i++) {
     //   for (let j = 0; j < result.length - i - 1; j++) {

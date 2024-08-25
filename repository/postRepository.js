@@ -36,9 +36,10 @@ const getAllPost = (userId, page, limit) => {
 
       // Using Mongoose Paginate V2
       const result = await Post.paginate({ userId: userId }, options);
+      // console.log(result.totalDocs)
 
       resolve({
-        totalEmployees: result.totalDocs,
+        totalPosts: result.totalDocs,
         totalPages: result.totalPages,
         currentPage: result.page,
         existedPosts: result.docs,
