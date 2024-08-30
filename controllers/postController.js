@@ -92,8 +92,24 @@ const getPostByTitle = async (req, res) => {
   try {
     let data = req.body;
     data.userId = req.user.id
+    const { page, limit } = req.query
 
-    let result = await getPostsByTitle(data);
+    let { totalPostsByTitle, totalPages, currentPage, existedPostsByTitle }  = await getPostsByTitle(data,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPostsByTitle,
+  }
+
+    // let result = await getPostsByTitle(data);
+    return apiResponsePagination(
+      existedPostsByTitle,
+      true,
+      200,
+      "Retrieved post by title successfully",
+      pagination,
+      res
+    );
     return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
       
   } catch (error) {

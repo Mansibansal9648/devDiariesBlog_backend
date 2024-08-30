@@ -110,7 +110,7 @@ const updatePost = (data) => {
   });
 };
 
-const getPostsByTitle = (data) => {
+const getPostsByTitle = (data,page,limit) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Remove spaces from the search term
@@ -123,14 +123,33 @@ const getPostsByTitle = (data) => {
 
       // const regex = new RegExp(`${data.title}`, 'i');
 
-      const existedPosts = await Post.find({
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
+      };
+
+      // Using Mongoose Paginate V2
+      const result = await Post.paginate({
         userId: data.userId,
         title: { $regex: regex },
+      }, options);
+      // console.log(result.totalDocs)
+
+      resolve({
+        totalPostsByTitle: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPostsByTitle: result.docs,
       });
-      // if (existedPosts.length ===0) {
-      //   throw new Error("Posts doesn't exists");
-      // } else {
-      resolve(existedPosts);
+      // const existedPosts = await Post.find({
+      //   userId: data.userId,
+      //   title: { $regex: regex },
+      // });
+      // // if (existedPosts.length ===0) {
+      // //   throw new Error("Posts doesn't exists");
+      // // } else {
+      // resolve(existedPosts);
     } catch (error) {
       reject(error);
     }
