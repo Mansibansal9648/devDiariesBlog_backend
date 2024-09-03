@@ -110,7 +110,7 @@ const getPostByTitle = async (req, res) => {
       pagination,
       res
     );
-    return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
+    // return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
       
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res)
@@ -139,8 +139,26 @@ const getPostByLabel=async(req,res)=>{
     let data = req.body;
     data.userId = req.user.id;
     // console.log(data);
-    let result = await searchPostByLabel(data);
-    return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
+    const { page, limit } = req.query
+
+    let { totalPostsByLabel, totalPages, currentPage, existedPostsByLabel }  = await searchPostByLabel(data,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPostsByLabel,
+  }
+
+    // let result = await getPostsByTitle(data);
+    return apiResponsePagination(
+      existedPostsByLabel,
+      true,
+      200,
+      "Retrieved post by label successfully",
+      pagination,
+      res
+    );
+    // let result = await searchPostByLabel(data);
+    // return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
   }

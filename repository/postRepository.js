@@ -175,15 +175,58 @@ const getAllUsedLabelsByUser = async (userId) => {
   });
 };
 
-const searchPostByLabel = (data) => {
+const searchPostByLabel = (data,page,limit) => {
   return new Promise(async (resolve, reject) => {
     try {
       // console.log(data)
-      const postsByLabel = await Post.aggregate([
+      // const options = {
+      //   page: parseInt(page, 10) || 1,
+      //   limit: parseInt(limit, 10) || 10,
+      //   sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
+      // };
+
+      // // Using Mongoose Paginate V2
+      // const result = await Post.aggregatePaginate([
+      //   { $match: { userId: data.userId, labels: data.label } },
+      // ], options);
+      // console.log(result.totalDocs)
+
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const offset= (page - 1) * limit;
+    
+      // Perform aggregation
+      const aggregationPipeline = [
         { $match: { userId: data.userId, labels: data.label } },
-      ]);
-      // console.log(postsByLabel)
-      resolve(postsByLabel);
+        { $sort: { updatedAt: -1 } },
+        { $skip: offset },
+        { $limit: limitNum },
+      ];
+    
+      const totalPostsByLabel = await Post.countDocuments({ userId: data.userId, labels: data.label });
+    
+      const postsByLabel = await Post.aggregate(aggregationPipeline);
+    
+      // Calculate total pages
+      const totalPages = Math.ceil(totalPostsByLabel / limitNum);
+    
+      resolve({
+        totalPostsByLabel:totalPostsByLabel,
+        totalPages:totalPages,
+        currentPage: pageNum,
+        existedPostsByLabel: postsByLabel,
+      })
+      // resolve({
+      //   totalPostsByLabel: result.totalDocs,
+      //   totalPages: result.totalPages,
+      //   currentPage: result.page,
+      //   existedPostsByLabel: result.docs,
+      // });
+      // const postsByLabel = await Post.aggregate([
+      //   { $match: { userId: data.userId, labels: data.label } },
+      // ]);
+      // // console.log(postsByLabel)
+      // resolve(postsByLabel);
     } catch (error) {
       // console.error("Error searching posts by label:", error);
       reject(error);
