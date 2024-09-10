@@ -1,5 +1,4 @@
 import { Post } from "../schemas/postSchema.js";
-import moment from "moment";
 
 const createNewPost = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -16,27 +15,13 @@ const createNewPost = (data) => {
 const getAllPost = (userId, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // console.log(data)
-      // const post = new Post();
-      // const existedPosts = await  Post.find({ userId:userId  }).skip(offset).limit(limit)
-      // const totalPosts = await Post.countDocuments()
-      // const totalPages = page && limit ? Math.ceil(totalPosts / limit) : 1
-      // resolve( {
-      //     totalEmployees: totalPosts,
-      //     totalPages: totalPages,
-      //     currentPage: page || 1,
-      //     existedPosts,
-      // })
-
       const options = {
         page: parseInt(page, 10) || 1,
         limit: parseInt(limit, 10) || 10,
-        sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
+        sort: { updatedAt: -1 },
       };
 
-      // Using Mongoose Paginate V2
       const result = await Post.paginate({ userId: userId }, options);
-      // console.log(result.totalDocs)
 
       resolve({
         totalPosts: result.totalDocs,
@@ -77,20 +62,6 @@ const updatePost = (data) => {
       if (!post) {
         throw new Error("Post doesn't exist");
       } else {
-        //  console.log(post)
-        // const now = new Date();
-        // const istOffset = 5.5 * 60 * 60 * 1000;
-        // data["updatedAt"] = new Date(now.getTime() + istOffset);
-        // const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
-        // const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
-
-        // // Calculate the current time in IST
-        // const istTime = new Date(
-        //   now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
-        // );
-
-        // data["createdAt"] = istTime;
-        // data["updatedAt"] = istTime;
         const updatedPost = await Post.updateOne(
           { _id: data.postId },
           {
@@ -98,7 +69,6 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
-            // updatedAt: data.updatedAt,
           }
         );
         //  console.log(updatedPost)
@@ -110,7 +80,7 @@ const updatePost = (data) => {
   });
 };
 
-const getPostsByTitle = (data,page,limit) => {
+const getPostsByTitle = (data, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Remove spaces from the search term
@@ -126,14 +96,15 @@ const getPostsByTitle = (data,page,limit) => {
       const options = {
         page: parseInt(page, 10) || 1,
         limit: parseInt(limit, 10) || 10,
-        sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
+        sort: { updatedAt: -1 },
       };
-
-      // Using Mongoose Paginate V2
-      const result = await Post.paginate({
-        userId: data.userId,
-        title: { $regex: regex },
-      }, options);
+      const result = await Post.paginate(
+        {
+          userId: data.userId,
+          title: { $regex: regex },
+        },
+        options
+      );
       // console.log(result.totalDocs)
 
       resolve({
@@ -142,14 +113,6 @@ const getPostsByTitle = (data,page,limit) => {
         currentPage: result.page,
         existedPostsByTitle: result.docs,
       });
-      // const existedPosts = await Post.find({
-      //   userId: data.userId,
-      //   title: { $regex: regex },
-      // });
-      // // if (existedPosts.length ===0) {
-      // //   throw new Error("Posts doesn't exists");
-      // // } else {
-      // resolve(existedPosts);
     } catch (error) {
       reject(error);
     }
@@ -169,32 +132,18 @@ const getAllUsedLabelsByUser = async (userId) => {
       // console.log(userLabels);
       resolve(userLabels.length ? userLabels[0].userLabels : []);
     } catch (error) {
-      // console.error('Error fetching unique labels:', error);
       reject(error);
     }
   });
 };
 
-const searchPostByLabel = (data,page,limit) => {
+const searchPostByLabel = (data, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // console.log(data)
-      // const options = {
-      //   page: parseInt(page, 10) || 1,
-      //   limit: parseInt(limit, 10) || 10,
-      //   sort: { updatedAt: -1 }, // Sorting by updatedAt in descending order
-      // };
-
-      // // Using Mongoose Paginate V2
-      // const result = await Post.aggregatePaginate([
-      //   { $match: { userId: data.userId, labels: data.label } },
-      // ], options);
-      // console.log(result.totalDocs)
-
       const pageNum = parseInt(page, 10) || 1;
       const limitNum = parseInt(limit, 10) || 10;
-      const offset= (page - 1) * limit;
-    
+      const offset = (page - 1) * limit;
+
       // Perform aggregation
       const aggregationPipeline = [
         { $match: { userId: data.userId, labels: data.label } },
@@ -202,33 +151,24 @@ const searchPostByLabel = (data,page,limit) => {
         { $skip: offset },
         { $limit: limitNum },
       ];
-    
-      const totalPostsByLabel = await Post.countDocuments({ userId: data.userId, labels: data.label });
-    
+
+      const totalPostsByLabel = await Post.countDocuments({
+        userId: data.userId,
+        labels: data.label,
+      });
+
       const postsByLabel = await Post.aggregate(aggregationPipeline);
-    
+
       // Calculate total pages
       const totalPages = Math.ceil(totalPostsByLabel / limitNum);
-    
+
       resolve({
-        totalPostsByLabel:totalPostsByLabel,
-        totalPages:totalPages,
+        totalPostsByLabel: totalPostsByLabel,
+        totalPages: totalPages,
         currentPage: pageNum,
         existedPostsByLabel: postsByLabel,
-      })
-      // resolve({
-      //   totalPostsByLabel: result.totalDocs,
-      //   totalPages: result.totalPages,
-      //   currentPage: result.page,
-      //   existedPostsByLabel: result.docs,
-      // });
-      // const postsByLabel = await Post.aggregate([
-      //   { $match: { userId: data.userId, labels: data.label } },
-      // ]);
-      // // console.log(postsByLabel)
-      // resolve(postsByLabel);
+      });
     } catch (error) {
-      // console.error("Error searching posts by label:", error);
       reject(error);
     }
   });
