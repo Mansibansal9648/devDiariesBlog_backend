@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import paginate from 'mongoose-paginate-v2';
+import { comment_options } from "../utils/stringConstant.js";
 
 const schema = new Schema(
   {
@@ -10,8 +11,8 @@ const schema = new Schema(
     labels: [String ],
     comment_options: {
       type: String,
-      enum: ["allow", "show_existing", "hide_existing"],
-      default: "allow",
+      enum: [comment_options.ALLOW, comment_options.SHOW_EXISTING, comment_options.HIDE_EXISTING],
+      default:comment_options.ALLOW,
     },
     // createdAt: { type: String, required: true },
     // updatedAt: { type: String, required: true },

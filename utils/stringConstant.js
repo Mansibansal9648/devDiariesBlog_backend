@@ -4,4 +4,3 @@ export const comment_options = {
     HIDE_EXISTING:'hide_existing'
 
   };
-  const stringValue = enumObject[enumValue];
