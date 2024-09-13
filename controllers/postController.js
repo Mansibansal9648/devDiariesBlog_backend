@@ -1,6 +1,7 @@
 import {
   apiResponseSuccess,
   apiResponseErr,
+  apiResponsePagination,
 } from "../middlewares/apiResponse.js";
 import {
   createNewPost,
@@ -28,27 +29,23 @@ const getPost = async (req, res) => {
   try {
     let userId = req.user.id;
     // console.log(req.body.userId)
-    let result = await getAllPost(userId);
-    let temp = {};
-    for (let i = 0; i < result.length; i++) {
-      for (let j = 0; j < result.length - i - 1; j++) {
-        // console.log(result[j])
-        if (
-          new Date(result[j].updatedAt).getTime() <
-          new Date(result[j + 1].updatedAt).getTime()
-        ) {
-          temp = result[j];
-          result[j] = result[j + 1];
-          result[j + 1] = temp;
-        }
-      }
-    }
+    const { page, limit } = req.query
+    // const offset = page && limit ? (page - 1) * parseInt(limit, 10) : null
 
-    return apiResponseSuccess(
-      result,
+    let { totalPosts, totalPages, currentPage, existedPosts }  = await getAllPost(userId,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPosts,
+  }
+  // console.log(pagination)
+
+    return apiResponsePagination(
+      existedPosts,
       true,
       200,
       "Posts retrieved successfully",
+      pagination,
       res
     );
   } catch (error) {
@@ -81,9 +78,25 @@ const getPostByTitle = async (req, res) => {
   try {
     let data = req.body;
     data.userId = req.user.id
+    const { page, limit } = req.query
 
-    let result = await getPostsByTitle(data);
-    return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
+    let { totalPostsByTitle, totalPages, currentPage, existedPostsByTitle }  = await getPostsByTitle(data,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPostsByTitle,
+  }
+
+    // let result = await getPostsByTitle(data);
+    return apiResponsePagination(
+      existedPostsByTitle,
+      true,
+      200,
+      "Retrieved post by title successfully",
+      pagination,
+      res
+    );
+    // return apiResponseSuccess(result, true, 200, "Retrieved post by title successfully", res)
       
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res)
@@ -112,22 +125,26 @@ const getPostByLabel=async(req,res)=>{
     let data = req.body;
     data.userId = req.user.id;
     // console.log(data);
-    let result = await searchPostByLabel(data);
-    let temp = {}
-    for(let i = 0; i < result.length; i++){
-      for(let j = 0; j < result.length - i - 1; j++) {
-        if(
-          new Date(result[j].updatedAt).getTime() < 
-          new Date(result[j + 1].updatedAt).getTime()
-        )
-        {
-          temp = result[j]
-          result[j] = result[j + 1];
-          result[j + 1] = temp;
-        }
-      }
-    }
-    return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
+    const { page, limit } = req.query
+
+    let { totalPostsByLabel, totalPages, currentPage, existedPostsByLabel }  = await searchPostByLabel(data,page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPostsByLabel,
+  }
+
+    // let result = await getPostsByTitle(data);
+    return apiResponsePagination(
+      existedPostsByLabel,
+      true,
+      200,
+      "Retrieved post by label successfully",
+      pagination,
+      res
+    );
+    // let result = await searchPostByLabel(data);
+    // return apiResponseSuccess(result, true, 200, "Post retrieved by label successfully", res);
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
   }

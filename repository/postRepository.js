@@ -1,22 +1,8 @@
 import { Post } from "../schemas/postSchema.js";
+
 const createNewPost = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const now = new Date();
-      // const istOffset = 5.5 * 60 * 60 * 1000;
-      // data["createdAt"] = new Date(now.getTime() + istOffset);
-      // data["updatedAt"] = new Date(now.getTime() + istOffset);
-      // Get the current time in UTC and convert it to IST
-      const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
-      const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
-
-      // Calculate the current time in IST
-      const istTime = new Date(
-        now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
-      );
-
-      data["createdAt"] = istTime;
-      data["updatedAt"] = istTime;
       const post = new Post(data);
       const newPost = await post.save();
       resolve(newPost);
@@ -26,14 +12,23 @@ const createNewPost = (data) => {
   });
 };
 
-const getAllPost = (data) => {
+const getAllPost = (userId, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // console.log(data)
-      // const post = new Post();
-      const allPosts = await Post.find({ userId: data });
-      // console.log(allPosts)
-      resolve(allPosts);
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 },
+      };
+
+      const result = await Post.paginate({ userId: userId }, options);
+
+      resolve({
+        totalPosts: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPosts: result.docs,
+      });
     } catch (error) {
       reject(error);
     }
@@ -67,20 +62,6 @@ const updatePost = (data) => {
       if (!post) {
         throw new Error("Post doesn't exist");
       } else {
-        //  console.log(post)
-        const now = new Date();
-        // const istOffset = 5.5 * 60 * 60 * 1000;
-        // data["updatedAt"] = new Date(now.getTime() + istOffset);
-        const utcOffsetInMilliseconds = now.getTimezoneOffset() * 60 * 1000;
-        const istOffsetInMilliseconds = 5.5 * 60 * 60 * 1000;
-
-        // Calculate the current time in IST
-        const istTime = new Date(
-          now.getTime() + utcOffsetInMilliseconds + istOffsetInMilliseconds
-        );
-
-        // data["createdAt"] = istTime;
-        data["updatedAt"] = istTime;
         const updatedPost = await Post.updateOne(
           { _id: data.postId },
           {
@@ -88,7 +69,6 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
-            updatedAt: data.updatedAt,
           }
         );
         //  console.log(updatedPost)
@@ -100,34 +80,44 @@ const updatePost = (data) => {
   });
 };
 
-const getPostsByTitle=(data)=>{
-  return new Promise(async(resolve,reject)=>{
-    try{
-// Remove spaces from the search term
-const allowedSpacesTitle = data.title.replace(/\s+/g, '');
-// const escapedTerm = escapeRegExp(cleanSearchTerm);
+const getPostsByTitle = (data, page, limit) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Remove spaces from the search term
+      const allowedSpacesTitle = data.title.replace(/\s+/g, "");
+      // const escapedTerm = escapeRegExp(cleanSearchTerm);
 
-// Create a regex pattern that allows for any characters between each character of the search term
-const regexPattern = allowedSpacesTitle.split('').join('.*');
-const regex = new RegExp(regexPattern, 'i');
-
+      // Create a regex pattern that allows for any characters between each character of the search term
+      const regexPattern = allowedSpacesTitle.split("").join(".*");
+      const regex = new RegExp(regexPattern, "i");
 
       // const regex = new RegExp(`${data.title}`, 'i');
 
-      const existedPosts= await Post.find({
-        userId:data.userId,
-        title: { $regex: regex },
-        });
-      // if (existedPosts.length ===0) {
-      //   throw new Error("Posts doesn't exists");
-      // } else {
-        resolve(existedPosts);
-       
-      }catch(error){
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 },
+      };
+      const result = await Post.paginate(
+        {
+          userId: data.userId,
+          title: { $regex: regex },
+        },
+        options
+      );
+      // console.log(result.totalDocs)
+
+      resolve({
+        totalPostsByTitle: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPostsByTitle: result.docs,
+      });
+    } catch (error) {
       reject(error);
     }
-  })
-}
+  });
+};
 const getAllUsedLabelsByUser = async (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -142,23 +132,43 @@ const getAllUsedLabelsByUser = async (userId) => {
       // console.log(userLabels);
       resolve(userLabels.length ? userLabels[0].userLabels : []);
     } catch (error) {
-      // console.error('Error fetching unique labels:', error);
       reject(error);
     }
   });
 };
 
-const searchPostByLabel = (data) => {
+const searchPostByLabel = (data, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // console.log(data)
-      const postsByLabel = await Post.aggregate([
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+      const offset = (page - 1) * limit;
+
+      // Perform aggregation
+      const aggregationPipeline = [
         { $match: { userId: data.userId, labels: data.label } },
-      ]);
-      // console.log(postsByLabel)
-      resolve(postsByLabel);
+        { $sort: { updatedAt: -1 } },
+        { $skip: offset },
+        { $limit: limitNum },
+      ];
+
+      const totalPostsByLabel = await Post.countDocuments({
+        userId: data.userId,
+        labels: data.label,
+      });
+
+      const postsByLabel = await Post.aggregate(aggregationPipeline);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalPostsByLabel / limitNum);
+
+      resolve({
+        totalPostsByLabel: totalPostsByLabel,
+        totalPages: totalPages,
+        currentPage: pageNum,
+        existedPostsByLabel: postsByLabel,
+      });
     } catch (error) {
-      // console.error("Error searching posts by label:", error);
       reject(error);
     }
   });
@@ -171,5 +181,5 @@ export {
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
-  searchPostByLabel
+  searchPostByLabel,
 };
