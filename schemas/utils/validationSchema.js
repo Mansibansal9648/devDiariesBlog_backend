@@ -1,6 +1,8 @@
 import express from "express";
 import { body } from "express-validator";
+import { category } from "../../utils/stringConstant.js";
 
+const validCategories = Object.values(category);
 const loginUserSchema = [
   body("username_email")
     .notEmpty()
@@ -37,40 +39,48 @@ const signupUserSchema = [
     .withMessage("Invalid password format"),
 ];
 
-const labelSchema=[
+const labelSchema = [
   body("name")
-  .notEmpty()
-  .withMessage("Label name is required field")
-  .bail()
-  .matches(/^[a-zA-Z_]{1,35}$/)
-  .withMessage("Invalid label format"),
-]
+    .notEmpty()
+    .withMessage("Label name is required field")
+    .bail()
+    .matches(/^[a-zA-Z_]{1,35}$/)
+    .withMessage("Invalid label format"),
+];
 
-const getLabelSchema=[
-  body("name")
-  .notEmpty()
-  .withMessage("Label name is required field")
-]
+const getLabelSchema = [
+  body("name").notEmpty().withMessage("Label name is required field"),
+];
 
-const createPostSchema=[
-body("title").notEmpty().withMessage("Title is required field"),
-body("content").notEmpty().withMessage("Content is required field")
-]
+const createPostSchema = [
+  body("title").notEmpty().withMessage("Title is required field"),
+  body("content").notEmpty().withMessage("Content is required field"),
+  body("category")
+    .notEmpty()
+    .withMessage("Category is required field")
+    .isIn(validCategories)
+    .withMessage("Invalid category"),
+];
 
-const editPostSchema=[
-...createPostSchema,
-body("postId").notEmpty().withMessage("Post Id is required field")
-]
+const editPostSchema = [
+  ...createPostSchema,
+  body("postId").notEmpty().withMessage("Post Id is required field"),
+];
 
-const getPostByTitleSchema=[
-  body("title")
-  .notEmpty()
-  .withMessage("Title is required field")
-]
+const getPostByTitleSchema = [
+  body("title").notEmpty().withMessage("Title is required field"),
+];
 
-const getPostByLabelSchema=[
-  body("label")
-  .notEmpty()
-  .withMessage("Label is required field")
-]
-export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema, getPostByLabelSchema};
+const getPostByLabelSchema = [
+  body("label").notEmpty().withMessage("Label is required field"),
+];
+export {
+  loginUserSchema,
+  signupUserSchema,
+  labelSchema,
+  getLabelSchema,
+  createPostSchema,
+  editPostSchema,
+  getPostByTitleSchema,
+  getPostByLabelSchema,
+};
