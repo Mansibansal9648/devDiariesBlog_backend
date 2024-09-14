@@ -174,6 +174,34 @@ const searchPostByLabel = (data, page, limit) => {
   });
 };
 
+const getPostsByCategory=(data,page,limit)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 },
+      };
+      const result = await Post.paginate(
+        {
+          category: data.category,
+        },
+        options
+      );
+
+      resolve({
+        totalPostsByCategory: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPostsByCategory: result.docs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 export {
   createNewPost,
   getAllPost,
@@ -182,4 +210,5 @@ export {
   getPostsByTitle,
   getAllUsedLabelsByUser,
   searchPostByLabel,
+  getPostsByCategory,
 };

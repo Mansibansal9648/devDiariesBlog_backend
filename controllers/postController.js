@@ -10,7 +10,8 @@ import {
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
-  searchPostByLabel
+  searchPostByLabel,
+  getPostsByCategory
 } from "../repository/postRepository.js";
 
 const createPost = async (req, res) => {
@@ -150,4 +151,30 @@ const getPostByLabel=async(req,res)=>{
   }
 }
 
-export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel };
+
+const getPostByCategory=async (req,res)=>{
+  try{
+  let data = req.body;
+  const { page, limit } = req.query
+
+  let { totalPostsByCategory, totalPages, currentPage, existedPostsByCategory }  = await getPostsByCategory(data,page, limit);
+  let pagination = {
+    page: currentPage,
+    totalPages: totalPages,
+    totalItems: totalPostsByCategory,
+}
+  return apiResponsePagination(
+    existedPostsByCategory,
+    true,
+    200,
+    "Retrieved post by category successfully",
+    pagination,
+    res
+  );
+    
+} catch (error) {
+  return apiResponseErr(null, false, 400, error.message, res)
+}
+}
+
+export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel,getPostByCategory };

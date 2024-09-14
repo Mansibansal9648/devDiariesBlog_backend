@@ -74,6 +74,11 @@ const getPostByTitleSchema = [
 const getPostByLabelSchema = [
   body("label").notEmpty().withMessage("Label is required field"),
 ];
+
+const getPostByCategorySchema = [
+  body("category").notEmpty().withMessage("Category is required field"),
+]
+
 export {
   loginUserSchema,
   signupUserSchema,
@@ -83,4 +88,5 @@ export {
   editPostSchema,
   getPostByTitleSchema,
   getPostByLabelSchema,
+  getPostByCategorySchema,
 };
