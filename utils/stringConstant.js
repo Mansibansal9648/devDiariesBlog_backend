@@ -7,11 +7,11 @@ export const comment_options = {
 
   export const category={
     DEVELOPMENT: 'development',
-    PROGRAMMING_LANGUAGE: 'programming_language',
+    PROGRAMMING_LANGUAGE: 'programming language',
     TECHNOLOGY:'technology',
     DEVOPS:'devOps',
     CLOUD: 'cloud',
-    CAREER_AND_GROWTH:'career_and_growth',
+    CAREER_AND_GROWTH:'career and growth',
     TOOLS:'tools',
     OTHERS:'others'
   }
