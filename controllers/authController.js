@@ -1,4 +1,4 @@
-import { loginUser, signUpUser } from "../repository/authRepository.js";
+import { forgotUserPassword, getUserByEmail, loginUser, signUpUser } from "../repository/authRepository.js";
 import bcrypt from "bcrypt";
 import {
   apiResponseSuccess,
@@ -76,4 +76,45 @@ const login = async (req, res) => {
     return apiResponseErr(null, false, 400, error.message, res)
   }
 };
-export { signUp, login };
+
+const forgotPassword=async(req,res)=>{
+  try{
+let data=req.body
+let result=await getUserByEmail(data);
+let accessTokenResponse = {
+  id: result._id,
+};
+const accessToken = jwt.sign(
+  accessTokenResponse,
+  process.env.JWT_SECRET_KEY,
+  {
+    expiresIn: process.env.PASSWORD_RESET_ACCESS_TOKEN_VALIDITY,
+  }
+);
+const resetPassRes=await forgotUserPassword(result.email, accessToken)
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS
+  }
+});
+
+const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
+const mailOptions = {
+  to: resetPassRes.email,
+  from: EMAIL_USER,
+  subject: 'Password Reset',
+  text: `Click the link to reset your password: ${resetLink}`
+};
+
+const emailRes=await transporter.sendMail(mailOptions);
+console.log(emailRes)
+return apiResponseSuccess({},true,200,"Password reset email sent successfully",res)
+  }catch(error){
+    return apiResponseErr(null, false, 400, error.message, res)
+  }
+}
+
+export { signUp, login,forgotPassword };

@@ -48,4 +48,42 @@ const signUpUser = async (data) => {
   });
 };
 
-export { loginUser, signUpUser };
+const getUserByEmail=(data)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findOne( { email: data.email }
+      );
+      if(existedUser){
+        resolve(newUser);
+      }else{
+        throw new Error("User doesn't exist");
+      }
+     
+    
+  } catch (error) {
+    reject(error);
+  }
+  })
+}
+
+const forgotUserPassword=(email,token)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findOne( { email: email }
+      );
+      if(existedUser &&existedUser.email!=email){
+        throw new Error("User doesn't exist");
+      }else{
+        existedUser.resetPasswordToken=token;
+        existedUser.resetPasswordExpires=Date.now() + 3600000;
+        const updatedUser = await existedUser.save();
+        resolve(updatedUser);
+      }
+  } catch (error) {
+    reject(error);
+  }
+  })
+}
+
+
+export { loginUser, signUpUser,forgotUserPassword,getUserByEmail };
