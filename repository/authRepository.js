@@ -54,7 +54,7 @@ const getUserByEmail=(data)=>{
       const existedUser = await User.findOne( { email: data.email }
       );
       if(existedUser){
-        resolve(newUser);
+        resolve(existedUser);
       }else{
         throw new Error("User doesn't exist");
       }

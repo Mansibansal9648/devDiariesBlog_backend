@@ -5,6 +5,8 @@ import {
   apiResponseErr,
 } from "../middlewares/apiResponse.js";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import emailTemplate from "../utils/emailTemplate.js";
 
 const signUp = async (req, res) => {
   try {
@@ -94,23 +96,23 @@ const accessToken = jwt.sign(
 const resetPassRes=await forgotUserPassword(result.email, accessToken)
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: 'Gmail',
   auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS
+      user: process.env.EMAIL_USER_NAME,
+      pass: process.env.EMAIL_PASSWORD
   }
 });
 
 const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
 const mailOptions = {
   to: resetPassRes.email,
-  from: EMAIL_USER,
-  subject: 'Password Reset',
-  text: `Click the link to reset your password: ${resetLink}`
+  from: process.env.EMAIL_USER_NAME,
+  subject: '[DevDiaries] Password Reset',
+  html:emailTemplate(resetLink)
 };
 
 const emailRes=await transporter.sendMail(mailOptions);
-console.log(emailRes)
+// console.log(emailRes)
 return apiResponseSuccess({},true,200,"Password reset email sent successfully",res)
   }catch(error){
     return apiResponseErr(null, false, 400, error.message, res)

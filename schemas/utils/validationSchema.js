@@ -73,4 +73,13 @@ const getPostByLabelSchema=[
   .notEmpty()
   .withMessage("Label is required field")
 ]
-export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema, getPostByLabelSchema};
+
+const forgotPasswordSchema=[
+  body("email")
+  .notEmpty()
+  .withMessage("Email is required field")
+  .bail()
+  .isEmail()
+  .withMessage("Invalid email format")
+]
+export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema, getPostByLabelSchema,forgotPasswordSchema};
