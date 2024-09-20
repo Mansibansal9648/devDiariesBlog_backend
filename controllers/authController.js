@@ -106,9 +106,9 @@ const transporter = nodemailer.createTransport({
 const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
 const mailOptions = {
   to: resetPassRes.email,
-  from: process.env.EMAIL_USER_NAME,
+  from: `"DevDiaries" <${process.env.EMAIL_USER_NAME}>`,
   subject: '[DevDiaries] Password Reset',
-  html:emailTemplate(resetLink)
+  html:emailTemplate(resetPassRes.username,resetLink)
 };
 
 const emailRes=await transporter.sendMail(mailOptions);
