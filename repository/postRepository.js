@@ -69,6 +69,7 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
+            category: data.category,
           }
         );
         //  console.log(updatedPost)
