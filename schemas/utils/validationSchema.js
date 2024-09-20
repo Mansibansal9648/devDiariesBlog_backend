@@ -37,49 +37,59 @@ const signupUserSchema = [
     .withMessage("Invalid password format"),
 ];
 
-const labelSchema=[
+const labelSchema = [
   body("name")
-  .notEmpty()
-  .withMessage("Label name is required field")
-  .bail()
-  .matches(/^[a-zA-Z_]{1,35}$/)
-  .withMessage("Invalid label format"),
-]
+    .notEmpty()
+    .withMessage("Label name is required field")
+    .bail()
+    .matches(/^[a-zA-Z_]{1,35}$/)
+    .withMessage("Invalid label format"),
+];
 
-const getLabelSchema=[
-  body("name")
-  .notEmpty()
-  .withMessage("Label name is required field")
-]
+const getLabelSchema = [
+  body("name").notEmpty().withMessage("Label name is required field"),
+];
 
-const createPostSchema=[
-body("title").notEmpty().withMessage("Title is required field"),
-body("content").notEmpty().withMessage("Content is required field")
-]
+const createPostSchema = [
+  body("title").notEmpty().withMessage("Title is required field"),
+  body("content").notEmpty().withMessage("Content is required field"),
+];
 
-const editPostSchema=[
-...createPostSchema,
-body("postId").notEmpty().withMessage("Post Id is required field")
-]
+const editPostSchema = [
+  ...createPostSchema,
+  body("postId").notEmpty().withMessage("Post Id is required field"),
+];
 
-const getPostByTitleSchema=[
-  body("title")
-  .notEmpty()
-  .withMessage("Title is required field")
-]
+const getPostByTitleSchema = [
+  body("title").notEmpty().withMessage("Title is required field"),
+];
 
-const getPostByLabelSchema=[
-  body("label")
-  .notEmpty()
-  .withMessage("Label is required field")
-]
+const getPostByLabelSchema = [
+  body("label").notEmpty().withMessage("Label is required field"),
+];
 
-const forgotPasswordSchema=[
+const forgotPasswordSchema = [
   body("email")
-  .notEmpty()
-  .withMessage("Email is required field")
-  .bail()
-  .isEmail()
-  .withMessage("Invalid email format")
-]
-export { loginUserSchema, signupUserSchema,labelSchema,getLabelSchema,createPostSchema,editPostSchema,getPostByTitleSchema, getPostByLabelSchema,forgotPasswordSchema};
+    .notEmpty()
+    .withMessage("Email is required field")
+    .bail()
+    .isEmail()
+    .withMessage("Invalid email format"),
+];
+
+const resetPasswordSchema = [
+  body("newPassword").notEmpty().withMessage("Email is required field"),
+];
+
+export {
+  loginUserSchema,
+  signupUserSchema,
+  labelSchema,
+  getLabelSchema,
+  createPostSchema,
+  editPostSchema,
+  getPostByTitleSchema,
+  getPostByLabelSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
+};

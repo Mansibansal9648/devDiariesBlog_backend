@@ -25,7 +25,7 @@ function emailTemplate (username,resetLink){
           </tr>
           <tr>
             <td style="padding: 20px; font-size: 16px; line-height: 24px; color: #333;">
-              <p>Hello, ${username}</p>
+              <p>Hello ${username},</p>
               <p>We received a request to reset your password. Click the link below to reset your password:</p>
               <p style="text-align: center;">
                 <a href="${resetLink}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>

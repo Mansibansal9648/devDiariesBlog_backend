@@ -1,4 +1,11 @@
-import { forgotUserPassword, getUserByEmail, loginUser, signUpUser } from "../repository/authRepository.js";
+import {
+  forgotUserPassword,
+  getUserByEmail,
+  getUserById,
+  loginUser,
+  resetUserPassword,
+  signUpUser,
+} from "../repository/authRepository.js";
 import bcrypt from "bcrypt";
 import {
   apiResponseSuccess,
@@ -10,25 +17,23 @@ import emailTemplate from "../utils/emailTemplate.js";
 
 const signUp = async (req, res) => {
   try {
-   
     let data = req.body;
     let password = data.password;
-
 
     const passwordSalt = await bcrypt.genSalt();
 
     let hashedPassword = await bcrypt.hash(password, passwordSalt);
     data.password = hashedPassword;
-  
+
     data.username = data.username.toLowerCase();
     data.email = data.email.toLowerCase();
-  
+
     let email = data.email.split("@")[0].replaceAll(".", "");
     data.email = email + "@" + data.email.split("@")[1];
     const result = await signUpUser(data);
-    return apiResponseSuccess({}, true, 201, "User created successfully", res)
+    return apiResponseSuccess({}, true, 201, "User created successfully", res);
   } catch (error) {
-    return apiResponseErr(null, false, 400, error.message, res)
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 
@@ -73,50 +78,92 @@ const login = async (req, res) => {
       isLogin: true,
       accessToken: accessToken,
     };
-    return apiResponseSuccess(result, true, 200, "User loggedIn successfully", res)
+    return apiResponseSuccess(
+      result,
+      true,
+      200,
+      "User loggedIn successfully",
+      res
+    );
   } catch (error) {
-    return apiResponseErr(null, false, 400, error.message, res)
+    return apiResponseErr(null, false, 400, error.message, res);
   }
 };
 
-const forgotPassword=async(req,res)=>{
-  try{
-let data=req.body
-let result=await getUserByEmail(data);
-let accessTokenResponse = {
-  id: result._id,
+const forgotPassword = async (req, res) => {
+  try {
+    let data = req.body;
+    let result = await getUserByEmail(data);
+    let accessTokenResponse = {
+      id: result._id,
+    };
+    const accessToken = jwt.sign(
+      accessTokenResponse,
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: process.env.PASSWORD_RESET_ACCESS_TOKEN_VALIDITY,
+      }
+    );
+    const resetPassRes = await forgotUserPassword(result.email, accessToken);
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER_NAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
+    const mailOptions = {
+      to: resetPassRes.email,
+      from: `"DevDiaries" <${process.env.EMAIL_USER_NAME}>`,
+      subject: "[DevDiaries] Password Reset",
+      html: emailTemplate(resetPassRes.username, resetLink),
+    };
+
+    const emailRes = await transporter.sendMail(mailOptions);
+    // console.log(emailRes)
+    return apiResponseSuccess(
+      {},
+      true,
+      200,
+      "Password reset email sent successfully",
+      res
+    );
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res);
+  }
 };
-const accessToken = jwt.sign(
-  accessTokenResponse,
-  process.env.JWT_SECRET_KEY,
-  {
-    expiresIn: process.env.PASSWORD_RESET_ACCESS_TOKEN_VALIDITY,
-  }
-);
-const resetPassRes=await forgotUserPassword(result.email, accessToken)
 
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-      user: process.env.EMAIL_USER_NAME,
-      pass: process.env.EMAIL_PASSWORD
-  }
-});
+const resetPassword = async (req, res) => {
+  try {
+    const data = req.body;
+    const accessToken = req.query.accessToken;
 
-const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
-const mailOptions = {
-  to: resetPassRes.email,
-  from: `"DevDiaries" <${process.env.EMAIL_USER_NAME}>`,
-  subject: '[DevDiaries] Password Reset',
-  html:emailTemplate(resetPassRes.username,resetLink)
+    const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+    const userRes = await getUserById(decodedUser);
+
+    const passwordSalt = await bcrypt.genSalt();
+
+    let hashedPassword = await bcrypt.hash(data.newPassword, passwordSalt);
+    // data.newPassword = hashedPassword;
+    const result = await resetUserPassword(
+      userRes,
+      accessToken,
+      hashedPassword
+    );
+
+    return apiResponseSuccess(
+      {},
+      true,
+      200,
+      "Password reset successfully",
+      res
+    );
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res);
+  }
 };
 
-const emailRes=await transporter.sendMail(mailOptions);
-// console.log(emailRes)
-return apiResponseSuccess({},true,200,"Password reset email sent successfully",res)
-  }catch(error){
-    return apiResponseErr(null, false, 400, error.message, res)
-  }
-}
-
-export { signUp, login,forgotPassword };
+export { signUp, login, forgotPassword, resetPassword };

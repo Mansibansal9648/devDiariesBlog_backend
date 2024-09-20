@@ -1,3 +1,4 @@
+import e from "cors";
 import { User } from "../schemas/signupSchema.js";
 
 const loginUser = (data) => {
@@ -48,42 +49,88 @@ const signUpUser = async (data) => {
   });
 };
 
-const getUserByEmail=(data)=>{
+const getUserByEmail = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const existedUser = await User.findOne( { email: data.email }
-      );
-      if(existedUser){
+      const existedUser = await User.findOne({ email: data.email });
+      if (existedUser) {
         resolve(existedUser);
-      }else{
+      } else {
         throw new Error("User doesn't exist");
       }
-     
-    
-  } catch (error) {
-    reject(error);
-  }
-  })
-}
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
-const forgotUserPassword=(email,token)=>{
+const forgotUserPassword = (email, token) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const existedUser = await User.findOne( { email: email }
-      );
-      if(existedUser &&existedUser.email!=email){
+      const existedUser = await User.findOne({ email: email });
+      if (existedUser && existedUser.email != email) {
         throw new Error("User doesn't exist");
-      }else{
-        existedUser.resetPasswordToken=token;
-        existedUser.resetPasswordExpires=Date.now() + 3600000;
+      } else {
+        existedUser.resetPasswordToken = token;
+        existedUser.resetPasswordExpires = Date.now() + 3600000;
         const updatedUser = await existedUser.save();
         resolve(updatedUser);
       }
-  } catch (error) {
-    reject(error);
-  }
-  })
-}
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const getUserById = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findById(data.id);
+      if (existedUser) {
+        resolve(existedUser);
+      } else {
+        throw new Error("User doesn't exist");
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
+const resetUserPassword = (data,accessToken,newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findById(data._id);
 
-export { loginUser, signUpUser,forgotUserPassword,getUserByEmail };
+      // if (existedUser) {
+        // resolve(existedUser);
+        if (!existedUser){
+          throw new Error("User doesn't exist");
+        } else if(existedUser.resetPasswordToken!==accessToken){
+          throw new Error("Toker is expired");
+        }
+        else if(existedUser.resetPasswordExpires<Date.now()){
+          throw new Error("Toker is invalid");
+        }
+    else{
+        // Reset password
+        existedUser.password = newPassword;
+        existedUser.resetToken = undefined;
+        existedUser.resetTokenExpires = undefined;
+        const updatedUser = await existedUser.save();
+        resolve(updatedUser);
+    }
+      //}
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export {
+  loginUser,
+  signUpUser,
+  forgotUserPassword,
+  getUserByEmail,
+  getUserById,
+  resetUserPassword,
+};
