@@ -106,16 +106,16 @@ const resetUserPassword = (data,accessToken,newPassword) => {
         if (!existedUser){
           throw new Error("User doesn't exist");
         } else if(existedUser.resetPasswordToken!==accessToken){
-          throw new Error("Toker is expired");
+          throw new Error("Token is expired");
         }
         else if(existedUser.resetPasswordExpires<Date.now()){
-          throw new Error("Toker is invalid");
+          throw new Error("Token is invalid");
         }
     else{
         // Reset password
         existedUser.password = newPassword;
-        existedUser.resetToken = undefined;
-        existedUser.resetTokenExpires = undefined;
+        existedUser.resetPasswordToken = undefined;
+        existedUser.resetPasswordExpires = undefined;
         const updatedUser = await existedUser.save();
         resolve(updatedUser);
     }
