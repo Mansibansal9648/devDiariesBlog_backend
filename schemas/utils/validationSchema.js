@@ -78,7 +78,7 @@ const forgotPasswordSchema = [
 ];
 
 const resetPasswordSchema = [
-  body("newPassword").notEmpty().withMessage("Email is required field"),
+  body("newPassword").notEmpty().withMessage("Password is required field"),
 ];
 
 export {
