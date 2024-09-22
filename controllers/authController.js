@@ -143,8 +143,9 @@ const resetPassword = async (req, res) => {
   try {
     const data = req.body;
     const accessToken = req.query.accessToken;
-
+    
     const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+    
     const userRes = await getUserById(decodedUser);
 
     const passwordSalt = await bcrypt.genSalt();

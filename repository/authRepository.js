@@ -105,11 +105,13 @@ const resetUserPassword = (data,accessToken,newPassword) => {
         // resolve(existedUser);
         if (!existedUser){
           throw new Error("User doesn't exist");
-        } else if(existedUser.resetPasswordToken!==accessToken){
-          throw new Error("Token is expired");
-        }
-        else if(existedUser.resetPasswordExpires<Date.now()){
+        } else if(existedUser.resetPasswordToken!=accessToken ){
           throw new Error("Token is invalid");
+        }
+        
+        else if(existedUser.resetPasswordExpires<Date.now()){
+          console.log ("abx");
+          throw new Error("Token is expired");
         }
     else{
         // Reset password
