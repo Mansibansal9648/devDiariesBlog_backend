@@ -93,6 +93,9 @@ const login = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     let data = req.body;
+    data.email = data.email.toLowerCase();
+    let email = data.email.split("@")[0].replaceAll(".", "");
+    data.email = email + "@" + data.email.split("@")[1];
     let result = await getUserByEmail(data);
     let accessTokenResponse = {
       id: result._id,
