@@ -144,8 +144,8 @@ const resetPassword = async (req, res) => {
     const data = req.body;
     const accessToken = req.query.accessToken;
 
-  const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
-
+    const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+    // console.log(decodedUser)
     const userRes = await getUserById(decodedUser);
 
     const passwordSalt = await bcrypt.genSalt();
@@ -167,8 +167,11 @@ const resetPassword = async (req, res) => {
     );
   } catch (error) {
     // console.log(error)
-    if(error.name==="TokenExpiredError"){
-      return apiResponseErr(null, false, 401, "Token is expired", res);
+    if (error.name === "TokenExpiredError") {
+      return apiResponseErr(null, false, 400, "Token is expired", res);
+    }
+    if (error.name === "JsonWebTokenError") {
+      return apiResponseErr(null, false, 400, "Token is invalid", res);
     }
     return apiResponseErr(null, false, 400, error.message, res);
   }
