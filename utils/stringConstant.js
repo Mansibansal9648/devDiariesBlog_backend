@@ -6,12 +6,12 @@ export const comment_options = {
   };
 
   export const category={
-    DEVELOPMENT: 'development',
-    PROGRAMMING_LANGUAGE: 'programming language',
-    TECHNOLOGY:'technology',
-    DEVOPS:'devOps',
-    CLOUD: 'cloud',
-    CAREER_AND_GROWTH:'career and growth',
-    TOOLS:'tools',
-    OTHERS:'others'
+    DEVELOPMENT: 'Development',
+    PROGRAMMING_LANGUAGE: 'Programming language',
+    TECHNOLOGY:'Technology',
+    DEVOPS:'DevOps',
+    CLOUD: 'Cloud',
+    CAREER_AND_GROWTH:'Career & Growth',
+    TOOLS:'Tools',
+    OTHERS:'Others'
   }
