@@ -8,20 +8,11 @@ const schema = new Schema(
     userId: { type: String, required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
-    category: {
+    categoryId: {
       type: String,
       required: true,
-      enums: [
-        category.DEVELOPMENT,
-        category.PROGRAMMING_LANGUAGE,
-        category.TECHNOLOGY,
-        category.DEVOPS,
-        category.CLOUD,
-        category.CAREER_AND_GROWTH,
-        category.TOOLS,
-        category.OTHERS,
-      ],
     },
+    
     labels: [String],
     comment_options: {
       type: String,

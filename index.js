@@ -2,6 +2,7 @@ import express from "express";
 import authRouter from "./routes/authRoute.js";
 import labelRouter from "./routes/labelRoute.js"
 import postRouter from "./routes/postRoute.js"
+import categoryRouter from './routes/categoryRoute.js'
 import dbConnection from "./db/db.js";
 import dotenv from "dotenv";
 import cors from 'cors';
@@ -19,6 +20,7 @@ app.use(express.json({limit: '*'}));
 app.use("/api", authRouter);
 app.use("/label",labelRouter)
 app.use("/post",postRouter)
+app.use("/category",categoryRouter);
 
 // app.post('/',()=>{
 //     console.log("hello world")
