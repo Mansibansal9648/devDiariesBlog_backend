@@ -5,12 +5,14 @@ import {
 } from "../middlewares/apiResponse.js";
 import {
   createNewPost,
-  getAllPost,
+  getAllUserPosts,
   removePost,
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
-  searchPostByLabel
+  searchPostByLabel,
+  getAllPosts,
+  getPostsByCategory
 } from "../repository/postRepository.js";
 
 const createPost = async (req, res) => {
@@ -25,14 +27,14 @@ const createPost = async (req, res) => {
   }
 };
 
-const getPost = async (req, res) => {
+const getAllUserPost = async (req, res) => {
   try {
     let userId = req.user.id;
     // console.log(req.body.userId)
     const { page, limit } = req.query
     // const offset = page && limit ? (page - 1) * parseInt(limit, 10) : null
 
-    let { totalPosts, totalPages, currentPage, existedPosts }  = await getAllPost(userId,page, limit);
+    let { totalPosts, totalPages, currentPage, existedPosts }  = await getAllUserPosts(userId,page, limit);
     let pagination = {
       page: currentPage,
       totalPages: totalPages,
@@ -150,4 +152,55 @@ const getPostByLabel=async(req,res)=>{
   }
 }
 
-export { createPost, getPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel };
+const getAllPost=async(req,res)=>{
+  try{
+    // let data = req.body;
+    const { page, limit } = req.query
+  
+    let { totalPosts, totalPages, currentPage, existedPosts }  = await getAllPosts(page, limit);
+    let pagination = {
+      page: currentPage,
+      totalPages: totalPages,
+      totalItems: totalPosts,
+  }
+    return apiResponsePagination(
+      existedPosts,
+      true,
+      200,
+      "Retrieved all posts successfully",
+      pagination,
+      res
+    );
+      
+  } catch (error) {
+    return apiResponseErr(null, false, 400, error.message, res)
+  }
+}
+
+
+const getPostByCategory=async (req,res)=>{
+  try{
+  let data = req.body;
+  const { page, limit } = req.query
+
+  let { totalPostsByCategory, totalPages, currentPage, existedPostsByCategory }  = await getPostsByCategory(data,page, limit);
+  let pagination = {
+    page: currentPage,
+    totalPages: totalPages,
+    totalItems: totalPostsByCategory,
+}
+  return apiResponsePagination(
+    existedPostsByCategory,
+    true,
+    200,
+    "Retrieved post by category successfully",
+    pagination,
+    res
+  );
+    
+} catch (error) {
+  return apiResponseErr(null, false, 400, error.message, res)
+}
+}
+
+export { createPost, getAllUserPost, deletePost, editPost,getPostByTitle, getAllLabelsUsedByUser,getPostByLabel,getAllPost,getPostByCategory };

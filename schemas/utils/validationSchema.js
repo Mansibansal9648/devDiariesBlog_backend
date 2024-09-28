@@ -1,6 +1,8 @@
 import express from "express";
 import { body } from "express-validator";
+import { category } from "../../utils/stringConstant.js";
 
+const validCategories = Object.values(category);
 const loginUserSchema = [
   body("username_email")
     .notEmpty()
@@ -81,7 +83,16 @@ const resetPasswordSchema = [
   body("newPassword").notEmpty().withMessage("Password is required field"),
 ];
 
+const getPostByLabelSchema = [
+  body("label").notEmpty().withMessage("Label is required field"),
+];
+
+const getPostByCategorySchema = [
+  body("category").notEmpty().withMessage("Category is required field"),
+]
+
 export {
+  getPostByCategorySchema,
   loginUserSchema,
   signupUserSchema,
   labelSchema,

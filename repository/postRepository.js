@@ -12,7 +12,7 @@ const createNewPost = (data) => {
   });
 };
 
-const getAllPost = (userId, page, limit) => {
+const getAllUserPosts = (userId, page, limit) => {
   return new Promise(async (resolve, reject) => {
     try {
       const options = {
@@ -69,6 +69,7 @@ const updatePost = (data) => {
             content: data.content,
             labels: data.labels,
             comment_options: data.comment_options,
+            category: data.category,
           }
         );
         //  console.log(updatedPost)
@@ -174,12 +175,67 @@ const searchPostByLabel = (data, page, limit) => {
   });
 };
 
+const getAllPosts=(page,limit)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 },
+      };
+      const result = await Post.paginate({},
+        options
+      );
+// console.log(result);
+      resolve({
+        totalPosts: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPosts: result.docs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+const getPostsByCategory=(data,page,limit)=>{
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10,
+        sort: { updatedAt: -1 },
+      };
+      const result = await Post.paginate(
+        {
+          category: data.category,
+        },
+        options
+      );
+
+      resolve({
+        totalPostsByCategory: result.totalDocs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        existedPostsByCategory: result.docs,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 export {
   createNewPost,
-  getAllPost,
+  getAllUserPosts,
   removePost,
   updatePost,
   getPostsByTitle,
   getAllUsedLabelsByUser,
   searchPostByLabel,
+  getAllPosts,
+  getPostsByCategory,
 };
