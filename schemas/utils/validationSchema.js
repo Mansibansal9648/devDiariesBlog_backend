@@ -83,10 +83,6 @@ const resetPasswordSchema = [
   body("newPassword").notEmpty().withMessage("Password is required field"),
 ];
 
-const getPostByLabelSchema = [
-  body("label").notEmpty().withMessage("Label is required field"),
-];
-
 const getPostByCategorySchema = [
   body("category").notEmpty().withMessage("Category is required field"),
 ]
