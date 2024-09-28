@@ -1,31 +1,43 @@
-import express from "express";
+// core module for application
+import express, { json } from "express";
+import dotenv from "dotenv";
+import cors from 'cors';
+
+// config options
+import dbConnection from "./db/db.js";
+
+// routes
 import authRouter from "./routes/authRoute.js";
 import labelRouter from "./routes/labelRoute.js"
 import postRouter from "./routes/postRoute.js"
 import categoryRouter from './routes/categoryRoute.js'
-import dbConnection from "./db/db.js";
-import dotenv from "dotenv";
-import cors from 'cors';
 
+// load environment
+dotenv.config();
+
+// initialize express app
 const app = express();
 
-dotenv.config();
-dbConnection();
+// config middlewares with
+app.use(cors({ origin: "*" }))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
 
-app.use(cors({
-  origin: "*",
-}))
-app.use(express.urlencoded({extended: true}));
-app.use(express.json({limit: '*'}));
+// routes
 app.use("/api", authRouter);
-app.use("/label",labelRouter)
-app.use("/post",postRouter)
-app.use("/category",categoryRouter);
+app.use("/label", labelRouter)
+app.use("/post", postRouter)
+app.use("/category", categoryRouter);
 
-// app.post('/',()=>{
-//     console.log("hello world")
-// })
+try {
+  // Db connection
+  await dbConnection()
 
-app.listen(process.env.PORT, () => {
-  console.log(`App is running on ${process.env.PORT}`);
-});
+  // initialize server
+  app.listen(process.env.PORT, () => {
+    console.info(`Yippee!! Server is running 😊😊 at port ${process.env.PORT}`);
+  });
+} catch (error) {
+  console.error(`😢 Error: Gracefully Shut down ${error.message}`);
+  process.exit(1);
+}

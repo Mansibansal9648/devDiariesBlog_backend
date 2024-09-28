@@ -2,20 +2,15 @@ import mongoose from "mongoose";
 
 const dbConnection = async () => {
   const url = process.env.DB_URL;
-  const db_name = "devDiariesBlog";
+  const db_name = process.env.DEV_DIARY_BLOG;
   try {
     await mongoose.connect(
       `${url}/${db_name}`
-      // {
-      //  useNewUrlParser:true,
-      //  useCreateIndex:true,
-      // useUnifiedTopology:true,
-      // useFindAndModify:false},
     );
-    console.log("Connected to database successfully");
+    console.info("Yippee!! DB connection established 🗂️ 🗂️");
   } catch (e) {
-    console.log(e);
-    console.log("Can not connect to database");
+    console.info("😞😞 Server Error");
+    throw e
   }
 };
 export default dbConnection;
