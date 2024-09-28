@@ -1,3 +1,4 @@
+import e from "cors";
 import { User } from "../schemas/signupSchema.js";
 
 const loginUser = (data) => {
@@ -48,4 +49,90 @@ const signUpUser = async (data) => {
   });
 };
 
-export { loginUser, signUpUser };
+const getUserByEmail = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findOne({ email: data.email });
+      if (existedUser) {
+        resolve(existedUser);
+      } else {
+        throw new Error("User doesn't exist");
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const forgotUserPassword = (email, token) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findOne({ email: email });
+      if (existedUser && existedUser.email != email) {
+        throw new Error("User doesn't exist");
+      } else {
+        existedUser.resetPasswordToken = token;
+        existedUser.resetPasswordExpires = Date.now() + 3600000;
+        const updatedUser = await existedUser.save();
+        resolve(updatedUser);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const getUserById = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findById(data.id);
+      if (existedUser) {
+        resolve(existedUser);
+      } else {
+        throw new Error("User doesn't exist");
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const resetUserPassword = (data,accessToken,newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const existedUser = await User.findById(data._id);
+
+      // if (existedUser) {
+        // resolve(existedUser);
+        if (!existedUser){
+          throw new Error("User doesn't exist");
+        } else if(existedUser.resetPasswordToken!=accessToken ){
+          throw new Error("Token is invalid");
+        }
+        
+        else if(existedUser.resetPasswordExpires<Date.now()){
+          console.log ("abx");
+          throw new Error("Token is expired");
+        }
+    else{
+        // Reset password
+        existedUser.password = newPassword;
+        existedUser.resetPasswordToken = undefined;
+        existedUser.resetPasswordExpires = undefined;
+        const updatedUser = await existedUser.save();
+        resolve(updatedUser);
+    }
+      //}
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export {
+  loginUser,
+  signUpUser,
+  forgotUserPassword,
+  getUserByEmail,
+  getUserById,
+  resetUserPassword,
+};

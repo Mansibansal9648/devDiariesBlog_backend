@@ -23,6 +23,8 @@ const schema = new Schema({
     // ,
   },
   // confirm_password: { type: String, required: true }
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 });
 
 export const User = mongoose.model("User", schema);
