@@ -30,8 +30,30 @@ const signUp = async (req, res) => {
 
     let email = data.email.split("@")[0].replaceAll(".", "");
     data.email = email + "@" + data.email.split("@")[1];
-    const result = await signUpUser(data);
-    return apiResponseSuccess({}, true, 201, "User created successfully", res);
+    let response = await signUpUser(data);
+    let accessTokenResponse = {
+      id: response._id,
+      username: response.username,
+      email: response.email,
+      name: response.name,
+    };
+    const accessToken = jwt.sign(
+      accessTokenResponse,
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_VALIDITY,
+      }
+    );
+    let result = {
+      id: response._id,
+      name: response.name,
+      username: response.username,
+      email: response.email,
+      isLogin: true,
+      accessToken: accessToken,
+    };
+    // const result = await signUpUser(data);
+    return apiResponseSuccess(result, true, 201, "User created successfully", res);
   } catch (error) {
     return apiResponseErr(null, false, 400, error.message, res);
   }
